@@ -4,13 +4,16 @@ import com.example.weatherapp.dao.User;
 import com.example.weatherapp.service.UserService;
 import jakarta.annotation.PostConstruct;
 import org.springframework.security.crypto.bcrypt.BCrypt;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-@Controller
+@RestController
+@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
@@ -40,4 +43,12 @@ public class UserController {
         userService.saveUser(user);
     }
 
+    @GetMapping
+    public List<User> getAllUsers() {
+
+        List<User> users = userService.getUsers();
+
+        System.out.println("Users: " + users);
+        return users;
+    }
 }
