@@ -1,45 +1,36 @@
 package com.example.weatherapp.dao;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
 @Entity
+@Table(name = "app_user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
+    @Column(name = "user_name")
     private String name;
 
-    @Column
+    @Column(name = "user_username")
     private String username;
 
     @Column
     private String password;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
     private UserProfile userProfile;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RequestHistory> requestHistories;
 
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", userProfile=" + userProfile +
-                ", requestHistories=" + requestHistories +
-                '}';
-    }
+    @Version
+    private Long version;
 
     public Long getId() {
         return id;
@@ -69,8 +60,9 @@ public class User {
         return password;
     }
 
-    public void setPassword(String password) {
+    public User setPassword(String password) {
         this.password = password;
+        return null;
     }
 
     public UserProfile getUserProfile() {
@@ -87,5 +79,13 @@ public class User {
 
     public void setRequestHistories(Set<RequestHistory> requestHistories) {
         this.requestHistories = requestHistories;
+    }
+
+    public Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }
