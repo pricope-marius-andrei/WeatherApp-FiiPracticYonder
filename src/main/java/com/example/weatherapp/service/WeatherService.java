@@ -1,4 +1,5 @@
 package com.example.weatherapp.service;
+import com.example.weatherapp.dto.WeatherDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -20,12 +21,12 @@ public class WeatherService {
         this.restClient = RestClient.create();
     }
 
-    public String getWeatherDetails(double lat, double lon) {
+    public WeatherDto getWeatherDetails(double lat, double lon) {
 
         var response = restClient.get()
                 .uri(API_ROOT +  "?&key=" + API_KEY + "&q=" + lat + "," + lon + "&aqi=yes")
                 .retrieve()
-                .body(String.class);
+                .body(WeatherDto.class);
 
         return response;
     }

@@ -1,5 +1,6 @@
 package com.example.weatherapp.controller;
 
+import com.example.weatherapp.dto.WeatherDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,8 +19,8 @@ public class WeatherController {
     }
 
     @GetMapping("/details")
-    public ResponseEntity<String> getDetails(@RequestParam double lat, @RequestParam double lon) {
-        String response = weatherService.getWeatherDetails(lat, lon);
+    public ResponseEntity<WeatherDto> getDetails(@RequestParam double lat, @RequestParam double lon) {
+        WeatherDto response = weatherService.getWeatherDetails(lat, lon);
         return ResponseEntity.ok(response);
     }
 }
