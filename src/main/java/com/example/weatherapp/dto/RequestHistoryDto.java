@@ -1,41 +1,26 @@
-package com.example.weatherapp.dao;
+package com.example.weatherapp.dto;
 
-import jakarta.persistence.*;
+import com.example.weatherapp.dao.User;
 
-@Entity
-public class RequestHistory {
+public class RequestHistoryDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
     private String lat;
 
-    @Column
     private String lon;
 
-    @Column(length = 2047)
     private String response;
 
-    @Column
     private Boolean q;
 
-    @Column
     private Boolean aqi;
 
-    @Column
     private Integer days;
 
-    @Column
     private Boolean alerts;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @Version
-    private Long version;
 
     public Long getId() {
         return id;
@@ -107,13 +92,5 @@ public class RequestHistory {
 
     public void setUser(User user) {
         this.user = user;
-    }
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
     }
 }

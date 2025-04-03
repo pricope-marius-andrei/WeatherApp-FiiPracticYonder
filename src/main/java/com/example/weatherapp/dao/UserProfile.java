@@ -15,8 +15,8 @@ public class UserProfile {
     @Column
     private Boolean emailNotification;
 
-    @OneToOne
-    private User user;
+    @Version
+    private Long version;
 
     public Long getId() {
         return id;
@@ -42,11 +42,11 @@ public class UserProfile {
         this.emailNotification = emailNotification;
     }
 
-    public User getUser() {
-        return user;
+    public Long getVersion() {
+        return version;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setVersion(Long version) {
+        this.version = version;
     }
 }

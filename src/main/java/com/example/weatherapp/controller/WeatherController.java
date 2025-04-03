@@ -1,12 +1,13 @@
 package com.example.weatherapp.controller;
 
 import com.example.weatherapp.dto.WeatherDto;
+import com.example.weatherapp.service.WeatherServiceImpl;
+import com.example.weatherapp.service.interfaces.WeatherService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.example.weatherapp.service.WeatherService;
 
 @RestController
 @RequestMapping("/weather")
@@ -14,8 +15,8 @@ public class WeatherController {
 
     private final WeatherService weatherService;
 
-    public WeatherController(WeatherService weatherService) {
-        this.weatherService = weatherService;
+    public WeatherController(WeatherServiceImpl weatherServiceImpl) {
+        this.weatherService = weatherServiceImpl;
     }
 
     @GetMapping("/details")

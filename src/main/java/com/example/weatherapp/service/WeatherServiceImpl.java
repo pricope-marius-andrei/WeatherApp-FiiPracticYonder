@@ -7,7 +7,7 @@ import org.springframework.web.client.RestClient;
 
 @Service
 @PropertySource("classpath:application.properties")
-public class WeatherService {
+public class WeatherServiceImpl implements com.example.weatherapp.service.interfaces.WeatherService {
 
     @Value(value = "${api.key}")
     private String API_KEY;
@@ -17,7 +17,7 @@ public class WeatherService {
 
     private final RestClient restClient;
 
-    public WeatherService() {
+    public WeatherServiceImpl() {
         this.restClient = RestClient.create();
     }
 

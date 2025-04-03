@@ -2,17 +2,19 @@ package com.example.weatherapp.service;
 
 import com.example.weatherapp.dao.UserProfile;
 import com.example.weatherapp.repository.UserProfileRepository;
+import com.example.weatherapp.service.interfaces.UserProfileService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class UserProfileService {
+public class UserProfileServiceImpl {
 
     private final UserProfileRepository userProfileRepository;
 
-    public UserProfileService(UserProfileRepository userProfileRepository) {
+    public UserProfileServiceImpl(UserProfileRepository userProfileRepository) {
         this.userProfileRepository = userProfileRepository;
     }
 
@@ -24,7 +26,10 @@ public class UserProfileService {
         return userProfileRepository.findById(id).orElse(null);
     }
 
+    @Transactional
     public UserProfile saveUserProfile(UserProfile userProfile) {
+        System.out.println("userProfile: " + userProfile);
+
         return userProfileRepository.save(userProfile);
     }
 

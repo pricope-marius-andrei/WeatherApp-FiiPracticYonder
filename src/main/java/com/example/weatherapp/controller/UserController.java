@@ -2,11 +2,17 @@ package com.example.weatherapp.controller;
 
 import com.example.weatherapp.dao.User;
 import com.example.weatherapp.dto.UserDto;
-import com.example.weatherapp.service.UserService;
+import com.example.weatherapp.service.UserServiceImpl;
+import com.example.weatherapp.service.interfaces.UserService;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/user")
@@ -14,7 +20,7 @@ public class UserController {
 
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public UserController(UserServiceImpl userService) {
         this.userService = userService;
     }
 
@@ -40,20 +46,29 @@ public class UserController {
 //    }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
+    public ResponseEntity<List<UserDto>> getAllUsers() {
 
         List<UserDto> users = userService.getUsers();
 
-        return users;
+        return ResponseEntity.ok(users);
     }
 
     @PostMapping
-    public void saveUser(@RequestBody User user) {
-
-        System.out.println("User: " + user);
+    public ResponseEntity<Object> saveUser(@RequestBody User user) {
 
         user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
 
-        userService.saveUser(user);
+        try {
+            userService.saveUser(user);
+        } catch (Exception e) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User was not created successfully!");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "User was created successfully!");
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 }

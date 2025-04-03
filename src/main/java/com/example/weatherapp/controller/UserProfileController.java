@@ -1,7 +1,7 @@
 package com.example.weatherapp.controller;
 
 import com.example.weatherapp.dao.UserProfile;
-import com.example.weatherapp.service.UserProfileService;
+import com.example.weatherapp.service.UserProfileServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,20 +10,20 @@ import java.util.List;
 @RequestMapping("user-profile")
 public class UserProfileController {
 
-    private final UserProfileService userProfileService;
+    private final UserProfileServiceImpl userProfileServiceImpl;
 
-    public UserProfileController(UserProfileService userProfileService) {
-        this.userProfileService = userProfileService;
+    public UserProfileController(UserProfileServiceImpl userProfileServiceImpl) {
+        this.userProfileServiceImpl = userProfileServiceImpl;
     }
 
     @GetMapping
     public List<UserProfile> getAllUserProfiles() {
-        return userProfileService.getUserProfiles();
+        return userProfileServiceImpl.getUserProfiles();
     }
 
     @GetMapping("/{id}")
     public UserProfile getUserProfileById(@PathVariable Long id) {
-        return userProfileService.getUserProfileById(id);
+        return userProfileServiceImpl.getUserProfileById(id);
     }
 
 //    @GetMapping("/by-user/{userId}")
@@ -33,16 +33,18 @@ public class UserProfileController {
 
     @PostMapping
     public UserProfile saveUserProfile(@RequestBody UserProfile userProfile) {
-        return userProfileService.saveUserProfile(userProfile);
+        System.out.println("userProfile: " + userProfile);
+
+        return userProfileServiceImpl.saveUserProfile(userProfile);
     }
 
     @PutMapping("/{id}")
     public UserProfile updateUserProfile(@PathVariable Long id, @RequestBody UserProfile userProfile) {
-        return userProfileService.updateUserProfile(id, userProfile);
+        return userProfileServiceImpl.updateUserProfile(id, userProfile);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUserProfile(@PathVariable Long id) {
-        userProfileService.deleteUserProfile(id);
+        userProfileServiceImpl.deleteUserProfile(id);
     }
 }
