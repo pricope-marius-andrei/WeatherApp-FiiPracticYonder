@@ -84,6 +84,13 @@
 			<version>42.7.2</version> <!-- Use the latest version -->
 		</dependency>
 
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>3.2.2</version>
+		</dependency>
+
+
 
 	</dependencies>
 

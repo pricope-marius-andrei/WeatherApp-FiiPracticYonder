@@ -1,7 +1,9 @@
 package com.example.weatherapp.service;
 
+import com.example.weatherapp.convert.UserDtoConverter;
 import com.example.weatherapp.dao.User;
 import com.example.weatherapp.dto.UserDto;
+import com.example.weatherapp.mapper.UserMapper;
 import com.example.weatherapp.repository.UserRepository;
 import com.example.weatherapp.service.interfaces.UserService;
 import jakarta.transaction.Transactional;
@@ -13,9 +15,11 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     public final UserRepository userRepository;
+    public final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, UserDtoConverter userMapper) {
         this.userRepository = userRepository;
+        this.userMapper = userMapper;
     }
 
     @Transactional
@@ -29,21 +33,32 @@ public class UserServiceImpl implements UserService {
 
         List<User> users = userRepository.findAll();
 
-        return users.stream().map(user -> new UserDto(user.getId(),user.getName(),user.getUsername())).toList();
+        return users.stream()
+                .map(userMapper::toDto)
+                .toList();
     }
 
     @Override
     public UserDto getUserById(Long id) {
-        return null;
+        User user = userRepository.findById(id).orElse(null);
+        if (user == null) {
+            return null;
+        }
+
+        return userMapper.toDto(user);
     }
 
     @Override
     public UserDto getUserByProfileId(Long profileId) {
-        return null;
+
+        UserDto user = userMapper.toDto(userRepository.findByProfileId(profileId));
+
+        return user;
     }
 
     @Override
     public void deleteUserById(Long id) {
-
+        userRepository.deleteById(id);
     }
+
 }
