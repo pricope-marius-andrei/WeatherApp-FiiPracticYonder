@@ -6,6 +6,7 @@ import com.example.weatherapp.dto.UserDto;
 import com.example.weatherapp.mapper.UserMapper;
 import com.example.weatherapp.repository.UserRepository;
 import com.example.weatherapp.service.interfaces.UserService;
+import com.example.weatherapp.utils.CustomBeanUtils;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +60,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional
+    public void updateUser(Long id, User user) {
+
+        User existingUser = userRepository.findById(id).orElse(null);
+
+        if (existingUser == null) {
+            return;
+        }
+
+        CustomBeanUtils.copyNonNullProperties(user, existingUser);
+
+        System.out.println("existingUser: " + existingUser);
+
+        userMapper.toDto(userRepository.save(existingUser));
     }
 
 }

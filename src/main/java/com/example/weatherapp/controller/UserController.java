@@ -114,9 +114,15 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/{id}")
+    // Problem: When I don't pass the user_profile id in the body, it creates a new user_profile
+    @PatchMapping("/{id}")
     public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody User user) {
+
+        if(!user.getId().equals(id))
+            return new ResponseEntity<>("User ID in the path and body do not match!", HttpStatus.BAD_REQUEST);
+
         UserDto existingUser = userService.getUserById(id);
+
         if (existingUser == null) {
             Map<String, String> response = new HashMap<>();
             response.put("message", "User not found!");
@@ -124,8 +130,8 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        user.setId(id);
-        userService.saveUser(user);
+        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+        userService.updateUser(id, user);
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "User was updated successfully!");

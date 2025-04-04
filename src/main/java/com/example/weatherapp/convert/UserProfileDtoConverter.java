@@ -4,7 +4,9 @@ import com.example.weatherapp.dao.UserProfile;
 import com.example.weatherapp.dto.UserProfileDto;
 import com.example.weatherapp.mapper.UserProfileMapper;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
+@Component
 public class UserProfileDtoConverter implements UserProfileMapper {
 
     private final ModelMapper modelMapper;
