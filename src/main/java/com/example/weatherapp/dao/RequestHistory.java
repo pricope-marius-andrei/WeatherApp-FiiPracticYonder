@@ -9,11 +9,11 @@ public class RequestHistory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private String lat;
+    @Column(columnDefinition = "double precision")
+    private double lat;
 
-    @Column
-    private String lon;
+    @Column(columnDefinition = "double precision")
+    private double lon;
 
     @Column(length = 2047)
     private String response;
@@ -45,19 +45,19 @@ public class RequestHistory {
         this.id = id;
     }
 
-    public String getLat() {
+    public double getLat() {
         return lat;
     }
 
-    public void setLat(String lat) {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public String getLon() {
+    public double getLon() {
         return lon;
     }
 
-    public void setLon(String lon) {
+    public void setLon(double lon) {
         this.lon = lon;
     }
 

@@ -23,6 +23,13 @@ public class WeatherDto {
         return current;
     }
 
+    @Override
+    public String toString() {
+        return "WeatherDto{" +
+                "location=" + location +
+                ", current=" + current +
+                '}';
+    }
 }
 
 @Embeddable
@@ -63,6 +70,16 @@ class Location {
     public void setTz_id(String tz_id) {
         this.tz_id = tz_id;
     }
+
+    @Override
+    public String toString() {
+        return "Location{" +
+                "name='" + name + '\'' +
+                ", region='" + region + '\'' +
+                ", country='" + country + '\'' +
+                ", tz_id='" + tz_id + '\'' +
+                '}';
+    }
 }
 
 @Embeddable
@@ -102,6 +119,16 @@ class Current {
 
     public void setPrecip_mm(double precip_mm) {
         this.precip_mm = precip_mm;
+    }
+
+    @Override
+    public String toString() {
+        return "Current{" +
+                "temp_c=" + temp_c +
+                ", wind_kph=" + wind_kph +
+                ", wind_dir='" + wind_dir + '\'' +
+                ", precip_mm=" + precip_mm +
+                '}';
     }
 }
 

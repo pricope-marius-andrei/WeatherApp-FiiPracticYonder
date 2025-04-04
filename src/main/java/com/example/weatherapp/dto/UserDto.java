@@ -1,7 +1,6 @@
 package com.example.weatherapp.dto;
 
-import com.example.weatherapp.dao.UserProfile;
-import jakarta.persistence.Embedded;
+import java.util.Set;
 
 public class UserDto {
 
@@ -9,17 +8,20 @@ public class UserDto {
     private String name;
     private String username;
 
-    @Embedded
     private UserProfileDto userProfile;
 
-    public UserDto(Long id, String name, String username, UserProfileDto userProfile) {
+    private Set<RequestHistoryDto> requestHistories;
+
+    public UserDto(Long id, String name, String username, UserProfileDto userProfile, Set<RequestHistoryDto> requestHistories) {
         this.id = id;
         this.name = name;
         this.username = username;
         this.userProfile = userProfile;
+        this.requestHistories = requestHistories;
     }
 
     public UserDto() {
+
     }
 
     public Long getId() {
@@ -53,4 +55,19 @@ public class UserDto {
     public void setUserProfile(UserProfileDto userProfile) {
         this.userProfile = userProfile;
     }
+
+    public Set<RequestHistoryDto> getRequestHistories() {
+        return requestHistories;
+    }
+
+    public void setRequestHistories(Set<RequestHistoryDto> requestHistories) {
+        if(this.requestHistories != null) {
+            this.requestHistories.addAll(requestHistories);
+        }
+        else
+        {
+            this.requestHistories = requestHistories;
+        }
+    }
+
 }

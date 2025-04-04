@@ -81,6 +81,11 @@ public class User {
         this.requestHistories = requestHistories;
     }
 
+    public void addRequest(RequestHistory requestHistory) {
+        this.requestHistories.add(requestHistory);
+        requestHistory.setUser(this);
+    }
+
     public Long getVersion() {
         return version;
     }
@@ -88,4 +93,5 @@ public class User {
     public void setVersion(Long version) {
         this.version = version;
     }
+
 }

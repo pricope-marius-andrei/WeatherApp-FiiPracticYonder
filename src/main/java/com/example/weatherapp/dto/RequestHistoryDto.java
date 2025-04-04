@@ -6,9 +6,9 @@ public class RequestHistoryDto {
 
     private Long id;
 
-    private String lat;
+    private double lat;
 
-    private String lon;
+    private double lon;
 
     private String response;
 
@@ -20,8 +20,6 @@ public class RequestHistoryDto {
 
     private Boolean alerts;
 
-    private User user;
-
     public Long getId() {
         return id;
     }
@@ -30,19 +28,19 @@ public class RequestHistoryDto {
         this.id = id;
     }
 
-    public String getLat() {
+    public double getLat() {
         return lat;
     }
 
-    public void setLat(String lat) {
+    public void setLat(double lat) {
         this.lat = lat;
     }
 
-    public String getLon() {
+    public double getLon() {
         return lon;
     }
 
-    public void setLon(String lon) {
+    public void setLon(double lon) {
         this.lon = lon;
     }
 
@@ -84,13 +82,5 @@ public class RequestHistoryDto {
 
     public void setAlerts(Boolean alerts) {
         this.alerts = alerts;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }
