@@ -7,6 +7,7 @@ import com.example.weatherapp.dto.WeatherDto;
 import com.example.weatherapp.mapper.UserMapper;
 import com.example.weatherapp.service.RequestHistoryServiceImpl;
 import com.example.weatherapp.service.WeatherServiceImpl;
+import com.example.weatherapp.service.interfaces.EmailService;
 import com.example.weatherapp.service.interfaces.RequestHistoryService;
 import com.example.weatherapp.service.interfaces.UserService;
 import com.example.weatherapp.service.interfaces.WeatherService;
@@ -24,12 +25,14 @@ public class RequestHistoryController {
 
     private final WeatherService weatherService;
     private final RequestHistoryService requestHistoryService;
+    private final EmailService emailService;
     private final UserService userService;
     private final UserMapper userMapper;
 
-    public RequestHistoryController(WeatherServiceImpl weatherServiceImpl, RequestHistoryServiceImpl requestHistoryServiceImpl, UserService userService, UserMapper userMapper) {
+    public RequestHistoryController(WeatherServiceImpl weatherServiceImpl, RequestHistoryServiceImpl requestHistoryServiceImpl, EmailService emailService, UserService userService, UserMapper userMapper) {
         this.weatherService = weatherServiceImpl;
         this.requestHistoryService = requestHistoryServiceImpl;
+        this.emailService = emailService;
         this.userService = userService;
         this.userMapper = userMapper;
     }
@@ -47,6 +50,8 @@ public class RequestHistoryController {
         {
             return new ResponseEntity<>( "User not found", HttpStatus.NOT_FOUND);
         }
+
+        emailService.sendEmail(user.getUsername() + "@gmail.com", "Weather Request", weatherDto.toString());
 
         user.setVersion(0L);
 
