@@ -50,11 +50,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDto getUserByUsername(String username) {
+        UserModel userModel = userModelRepository.findByUsername(username);
+        if (userModel == null) {
+            return null;
+        }
+
+        return userMapper.toDto(userModel);
+    }
+
+    @Override
     public UserDto getUserByProfileId(Long profileId) {
-
-        UserDto user = userMapper.toDto(userModelRepository.findByProfileId(profileId));
-
-        return user;
+        return userMapper.toDto(userModelRepository.findByProfileId(profileId));
     }
 
     @Override

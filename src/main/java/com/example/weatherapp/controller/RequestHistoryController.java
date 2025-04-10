@@ -1,5 +1,6 @@
 package com.example.weatherapp.controller;
 
+import com.example.weatherapp.dto.UserDto;
 import com.example.weatherapp.model.RequestHistory;
 import com.example.weatherapp.model.UserModel;
 import com.example.weatherapp.dto.RequestHistoryDto;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -37,14 +40,14 @@ public class RequestHistoryController {
         this.userMapper = userMapper;
     }
 
-    @PostMapping("/{userId}")
-    public ResponseEntity<String> addRequestHistory(Long userId, double latitude, double longitude) {
+    @PostMapping
+    public ResponseEntity<String> addRequestHistory(@AuthenticationPrincipal UserDetails userDetails, @RequestParam Double latitude, @RequestParam Double longitude) {
 
         WeatherDto weatherDto = weatherService.getWeatherDetails(latitude, longitude);
 
         RequestHistory requestHistory = new RequestHistory();
 
-        UserModel userModel = userMapper.toEntity(userService.getUserById(userId));
+        UserModel userModel = userMapper.toEntity(userService.getUserByUsername(userDetails.getUsername()));
 
         if(userModel == null)
         {
@@ -66,15 +69,18 @@ public class RequestHistoryController {
         return new ResponseEntity<>( "Request history added successfully", HttpStatus.CREATED);
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping
     public Page<RequestHistoryDto> getAllRequests(
-            Long userId,
+            @AuthenticationPrincipal UserDetails userDetails,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "2") int size,
             @RequestParam(defaultValue = "id") String sortBy
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
-        return requestHistoryService.getPagedRequestHistoriesByUserId(userId, pageable);
+
+        UserDto user = userService.getUserByUsername(userDetails.getUsername());
+
+        return requestHistoryService.getPagedRequestHistoriesByUserId(user.getId(), pageable);
     }
 
     @GetMapping("/details")

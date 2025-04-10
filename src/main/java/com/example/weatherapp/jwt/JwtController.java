@@ -2,6 +2,7 @@ package com.example.weatherapp.jwt;
 
 import com.example.weatherapp.jwt.model.JwtRequestModel;
 import com.example.weatherapp.jwt.model.JwtResponseModel;
+import com.example.weatherapp.model.UserModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,16 +24,29 @@ public class JwtController {
 
     private final JwtUtil tokenManager;
 
+
+
     public JwtController(JwtUserDetailsService userDetailsService, JwtUtil tokenManager, AuthenticationManager authenticationManager) {
         this.userDetailsService = userDetailsService;
         this.tokenManager = tokenManager;
         this.authenticationManager = authenticationManager;
     }
 
-    // Get a JWT Token once user is authenticated, otherwise throw BadCredentialsException
     @PostMapping("/login")
     public ResponseEntity<JwtResponseModel> createToken(@RequestBody JwtRequestModel
                                                                 request) throws Exception {
+
+        UserDetails userDetails;
+        try {
+            userDetails = userDetailsService.loadUserByUsername(request.getUsername());
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(new JwtResponseModel("User not found"));
+        }
+
+        final String jwtToken = tokenManager.generateJWTToken(userDetails);
+
+
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
@@ -43,8 +57,19 @@ public class JwtController {
             throw new Exception("INVALID_CREDENTIALS", e);
         }
 
-      final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
-      final String jwtToken = tokenManager.generateJWTToken(userDetails);
+
+
+
       return ResponseEntity.ok(new JwtResponseModel(jwtToken));
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<String> register(@RequestBody UserModel request) {
+        try {
+            userDetailsService.saveUser(request);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("User with this username already exists");
+        }
+        return ResponseEntity.ok("User registered successfully");
     }
 }

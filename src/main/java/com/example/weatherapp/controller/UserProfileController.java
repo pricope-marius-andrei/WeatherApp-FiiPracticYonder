@@ -1,11 +1,15 @@
 package com.example.weatherapp.controller;
 
+import com.example.weatherapp.dto.UserDto;
 import com.example.weatherapp.model.UserProfile;
 import com.example.weatherapp.dto.UserProfileDto;
 import com.example.weatherapp.service.UserProfileServiceImpl;
 import com.example.weatherapp.service.interfaces.UserProfileService;
+import com.example.weatherapp.service.interfaces.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,9 +20,11 @@ import java.util.Map;
 public class UserProfileController {
 
     private final UserProfileService userProfileServiceImpl;
+    private final UserService userService;
 
-    public UserProfileController(UserProfileServiceImpl userProfileServiceImpl) {
+    public UserProfileController(UserProfileServiceImpl userProfileServiceImpl, UserService userService) {
         this.userProfileServiceImpl = userProfileServiceImpl;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -34,7 +40,7 @@ public class UserProfileController {
     @PostMapping
     public ResponseEntity<Object> saveUserProfile(@RequestBody UserProfile userProfile) {
 
-        UserProfileDto userProfileDto =  userProfileServiceImpl.saveUserProfile(userProfile);
+        UserProfileDto userProfileDto = userProfileServiceImpl.saveUserProfile(userProfile);
 
         if (userProfileDto == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -60,9 +66,12 @@ public class UserProfileController {
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Object> deleteUserProfile(@PathVariable Long id) {
-        userProfileServiceImpl.deleteUserProfile(id);
+    @DeleteMapping
+    public ResponseEntity<Object> deleteUserProfile(@AuthenticationPrincipal UserDetails userDetails) {
+
+        UserDto user = userService.getUserByUsername(userDetails.getUsername());
+
+        userProfileServiceImpl.deleteUserProfile(user.getId());
 
         Map<String, String> response = Map.of(
                 "message", "User profile deleted successfully"
