@@ -1,6 +1,6 @@
 package com.example.weatherapp.convert;
 
-import com.example.weatherapp.dao.RequestHistory;
+import com.example.weatherapp.model.RequestHistory;
 import com.example.weatherapp.dto.RequestHistoryDto;
 import com.example.weatherapp.mapper.RequestHistoryMapper;
 import org.modelmapper.ModelMapper;

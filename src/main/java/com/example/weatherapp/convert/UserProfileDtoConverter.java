@@ -1,6 +1,6 @@
 package com.example.weatherapp.convert;
 
-import com.example.weatherapp.dao.UserProfile;
+import com.example.weatherapp.model.UserProfile;
 import com.example.weatherapp.dto.UserProfileDto;
 import com.example.weatherapp.mapper.UserProfileMapper;
 import org.modelmapper.ModelMapper;

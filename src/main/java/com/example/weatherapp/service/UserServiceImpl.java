@@ -1,10 +1,10 @@
 package com.example.weatherapp.service;
 
 import com.example.weatherapp.convert.UserDtoConverter;
-import com.example.weatherapp.dao.User;
+import com.example.weatherapp.model.UserModel;
 import com.example.weatherapp.dto.UserDto;
 import com.example.weatherapp.mapper.UserMapper;
-import com.example.weatherapp.repository.UserRepository;
+import com.example.weatherapp.repository.UserModelRepository;
 import com.example.weatherapp.service.interfaces.UserService;
 import com.example.weatherapp.utils.CustomBeanUtils;
 import jakarta.transaction.Transactional;
@@ -15,68 +15,68 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
 
-    public final UserRepository userRepository;
+    public final UserModelRepository userModelRepository;
     public final UserMapper userMapper;
 
-    public UserServiceImpl(UserRepository userRepository, UserDtoConverter userMapper) {
-        this.userRepository = userRepository;
+    public UserServiceImpl(UserModelRepository userModelRepository, UserDtoConverter userMapper) {
+        this.userModelRepository = userModelRepository;
         this.userMapper = userMapper;
     }
 
     @Transactional
-    public void saveUser(User user) {
-        System.out.println("user: " + user);
+    public void saveUser(UserModel userModel) {
+        System.out.println("user: " + userModel);
 
-        userRepository.save(user);
+        userModelRepository.save(userModel);
     }
 
     public List<UserDto> getUsers() {
 
-        List<User> users = userRepository.findAll();
+        List<UserModel> userModels = userModelRepository.findAll();
 
-        return users.stream()
+        return userModels.stream()
                 .map(userMapper::toDto)
                 .toList();
     }
 
     @Override
     public UserDto getUserById(Long id) {
-        User user = userRepository.findById(id).orElse(null);
-        if (user == null) {
+        UserModel userModel = userModelRepository.findById(id).orElse(null);
+        if (userModel == null) {
             return null;
         }
 
-        return userMapper.toDto(user);
+        return userMapper.toDto(userModel);
     }
 
     @Override
     public UserDto getUserByProfileId(Long profileId) {
 
-        UserDto user = userMapper.toDto(userRepository.findByProfileId(profileId));
+        UserDto user = userMapper.toDto(userModelRepository.findByProfileId(profileId));
 
         return user;
     }
 
     @Override
     public void deleteUserById(Long id) {
-        userRepository.deleteById(id);
+        userModelRepository.deleteById(id);
     }
 
     @Override
     @Transactional
-    public void updateUser(Long id, User user) {
+    public void updateUser(Long id, UserModel userModel) {
 
-        User existingUser = userRepository.findById(id).orElse(null);
+        UserModel existingUserModel = userModelRepository.findById(id).orElse(null);
 
-        if (existingUser == null) {
+        if (existingUserModel == null) {
             return;
         }
 
-        CustomBeanUtils.copyNonNullProperties(user, existingUser);
+        CustomBeanUtils.copyNonNullProperties(userModel, existingUserModel);
 
-        System.out.println("existingUser: " + existingUser);
+        System.out.println("existingUser: " + existingUserModel);
 
-        userMapper.toDto(userRepository.save(existingUser));
+        userMapper.toDto(userModelRepository.save(existingUserModel));
     }
 
 }

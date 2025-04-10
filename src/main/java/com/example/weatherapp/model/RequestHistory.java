@@ -1,4 +1,4 @@
-package com.example.weatherapp.dao;
+package com.example.weatherapp.model;
 
 import jakarta.persistence.*;
 
@@ -32,7 +32,7 @@ public class RequestHistory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    private UserModel user;
 
     @Version
     private Long version;
@@ -101,12 +101,12 @@ public class RequestHistory {
         this.alerts = alerts;
     }
 
-    public User getUser() {
+    public UserModel getUser() {
         return user;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUser(UserModel userModel) {
+        this.user = userModel;
     }
 
     public Long getVersion() {

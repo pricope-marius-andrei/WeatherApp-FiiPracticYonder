@@ -1,6 +1,6 @@
 package com.example.weatherapp.repository;
 
-import com.example.weatherapp.dao.UserProfile;
+import com.example.weatherapp.model.UserProfile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

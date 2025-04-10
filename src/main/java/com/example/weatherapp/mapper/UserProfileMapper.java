@@ -1,6 +1,6 @@
 package com.example.weatherapp.mapper;
 
-import com.example.weatherapp.dao.UserProfile;
+import com.example.weatherapp.model.UserProfile;
 import com.example.weatherapp.dto.UserProfileDto;
 
 public interface UserProfileMapper {

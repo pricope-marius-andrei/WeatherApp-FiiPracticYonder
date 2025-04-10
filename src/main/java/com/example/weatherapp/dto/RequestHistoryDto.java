@@ -1,7 +1,5 @@
 package com.example.weatherapp.dto;
 
-import com.example.weatherapp.dao.User;
-
 public class RequestHistoryDto {
 
     private Long id;

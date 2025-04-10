@@ -1,6 +1,6 @@
 package com.example.weatherapp.service.interfaces;
 
-import com.example.weatherapp.dao.RequestHistory;
+import com.example.weatherapp.model.RequestHistory;
 import com.example.weatherapp.dto.RequestHistoryDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

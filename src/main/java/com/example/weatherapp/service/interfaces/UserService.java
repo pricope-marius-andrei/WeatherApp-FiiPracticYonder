@@ -1,15 +1,15 @@
 package com.example.weatherapp.service.interfaces;
 
-import com.example.weatherapp.dao.User;
+import com.example.weatherapp.model.UserModel;
 import com.example.weatherapp.dto.UserDto;
 
 import java.util.List;
 
 public interface UserService {
-    void saveUser(User user);
+    void saveUser(UserModel userModel);
     List<UserDto> getUsers();
     UserDto getUserById(Long id);
     UserDto getUserByProfileId(Long profileId);
     void deleteUserById(Long id);
-    void updateUser(Long id, User userDto);
+    void updateUser(Long id, UserModel userModelDto);
 }

@@ -1,4 +1,4 @@
-package com.example.weatherapp.dao;
+package com.example.weatherapp.model;
 
 import jakarta.persistence.*;
 

@@ -1,6 +1,6 @@
 package com.example.weatherapp.controller;
 
-import com.example.weatherapp.dao.User;
+import com.example.weatherapp.model.UserModel;
 import com.example.weatherapp.dto.UserDto;
 import com.example.weatherapp.service.UserServiceImpl;
 import com.example.weatherapp.service.interfaces.UserService;
@@ -53,12 +53,12 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> saveUser(@RequestBody User user) {
+    public ResponseEntity<Object> saveUser(@RequestBody UserModel userModel) {
 
-        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
+        userModel.setPassword(BCrypt.hashpw(userModel.getPassword(), BCrypt.gensalt()));
 
         try {
-            userService.saveUser(user);
+            userService.saveUser(userModel);
         } catch (Exception e) {
             Map<String, String> response = new HashMap<>();
             response.put("message", "User was not created successfully!");
@@ -116,9 +116,9 @@ public class UserController {
 
     // Problem: When I don't pass the user_profile id in the body, it creates a new user_profile
     @PatchMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody UserModel userModel) {
 
-        if(!user.getId().equals(id))
+        if(!userModel.getId().equals(id))
             return new ResponseEntity<>("User ID in the path and body do not match!", HttpStatus.BAD_REQUEST);
 
         UserDto existingUser = userService.getUserById(id);
@@ -130,8 +130,8 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        user.setPassword(BCrypt.hashpw(user.getPassword(), BCrypt.gensalt()));
-        userService.updateUser(id, user);
+        userModel.setPassword(BCrypt.hashpw(userModel.getPassword(), BCrypt.gensalt()));
+        userService.updateUser(id, userModel);
 
         Map<String, String> response = new HashMap<>();
         response.put("message", "User was updated successfully!");

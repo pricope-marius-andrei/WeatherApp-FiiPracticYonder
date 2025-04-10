@@ -1,7 +1,7 @@
 package com.example.weatherapp.controller;
 
-import com.example.weatherapp.dao.RequestHistory;
-import com.example.weatherapp.dao.User;
+import com.example.weatherapp.model.RequestHistory;
+import com.example.weatherapp.model.UserModel;
 import com.example.weatherapp.dto.RequestHistoryDto;
 import com.example.weatherapp.dto.WeatherDto;
 import com.example.weatherapp.mapper.UserMapper;
@@ -44,23 +44,23 @@ public class RequestHistoryController {
 
         RequestHistory requestHistory = new RequestHistory();
 
-        User user = userMapper.toEntity(userService.getUserById(userId));
+        UserModel userModel = userMapper.toEntity(userService.getUserById(userId));
 
-        if(user == null)
+        if(userModel == null)
         {
             return new ResponseEntity<>( "User not found", HttpStatus.NOT_FOUND);
         }
 
-        emailService.sendEmail(user.getUsername() + "@gmail.com", "Weather Request", weatherDto.toString());
+        emailService.sendEmail(userModel.getUsername() + "@gmail.com", "Weather Request", weatherDto.toString());
 
-        user.setVersion(0L);
+        userModel.setVersion(0L);
 
-        requestHistory.setUser(user);
+        requestHistory.setUser(userModel);
         requestHistory.setLat(latitude);
         requestHistory.setLon(longitude);
         requestHistory.setResponse(weatherDto.toString());
 
-        user.addRequest(requestHistory);
+        userModel.addRequest(requestHistory);
 
         requestHistoryService.addRequestHistory(requestHistory);
         return new ResponseEntity<>( "Request history added successfully", HttpStatus.CREATED);

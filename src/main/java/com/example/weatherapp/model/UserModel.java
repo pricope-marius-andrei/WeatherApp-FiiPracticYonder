@@ -1,13 +1,12 @@
-package com.example.weatherapp.dao;
+package com.example.weatherapp.model;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
 @Entity
 @Table(name = "app_user")
-public class User {
+public class UserModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -60,7 +59,7 @@ public class User {
         return password;
     }
 
-    public User setPassword(String password) {
+    public UserModel setPassword(String password) {
         this.password = password;
         return null;
     }
