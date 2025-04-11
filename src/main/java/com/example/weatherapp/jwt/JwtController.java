@@ -1,5 +1,8 @@
 package com.example.weatherapp.jwt;
 
+import com.example.weatherapp.exception.PasswordIsNullException;
+import com.example.weatherapp.exception.UsernameAlreadyExistsException;
+import com.example.weatherapp.exception.UsernameIsNullException;
 import com.example.weatherapp.jwt.model.JwtRequestModel;
 import com.example.weatherapp.jwt.model.JwtResponseModel;
 import com.example.weatherapp.model.UserModel;
@@ -67,9 +70,13 @@ public class JwtController {
     public ResponseEntity<String> register(@RequestBody UserModel request) {
         try {
             userDetailsService.saveUser(request);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("User with this username already exists");
+        } catch (UsernameAlreadyExistsException | UsernameIsNullException | PasswordIsNullException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
+        catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Invalid user data");
+        }
+
         return ResponseEntity.ok("User registered successfully");
     }
 }

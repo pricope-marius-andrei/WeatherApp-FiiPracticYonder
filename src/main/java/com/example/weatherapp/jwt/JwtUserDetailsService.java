@@ -1,5 +1,8 @@
 package com.example.weatherapp.jwt;
 
+import com.example.weatherapp.exception.PasswordIsNullException;
+import com.example.weatherapp.exception.UsernameAlreadyExistsException;
+import com.example.weatherapp.exception.UsernameIsNullException;
 import com.example.weatherapp.model.UserModel;
 import com.example.weatherapp.repository.UserModelRepository;
 import org.springframework.security.core.userdetails.User;
@@ -37,11 +40,21 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     public void saveUser(UserModel userModel) throws IllegalArgumentException {
 
+        if(userModel.getUsername() == null || userModel.getUsername().isEmpty())
+        {
+            throw new UsernameIsNullException();
+        }
+
+        if(userModel.getPassword() == null || userModel.getPassword().isEmpty())
+        {
+            throw new PasswordIsNullException();
+        }
+
         UserModel existingUser = userModelRepository.findByUsername(userModel.getUsername());
 
         if(existingUser != null)
         {
-            throw new IllegalArgumentException("User with this username already exists!");
+            throw new UsernameAlreadyExistsException(userModel.getUsername());
         }
 
         userModel.setPassword(BCrypt.hashpw(userModel.getPassword(), BCrypt.gensalt()));

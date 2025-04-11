@@ -25,8 +25,6 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     public void saveUser(UserModel userModel) {
-        System.out.println("user: " + userModel);
-
         userModelRepository.save(userModel);
     }
 
@@ -80,9 +78,6 @@ public class UserServiceImpl implements UserService {
         }
 
         CustomBeanUtils.copyNonNullProperties(userModel, existingUserModel);
-
-        System.out.println("existingUser: " + existingUserModel);
-
         userMapper.toDto(userModelRepository.save(existingUserModel));
     }
 
