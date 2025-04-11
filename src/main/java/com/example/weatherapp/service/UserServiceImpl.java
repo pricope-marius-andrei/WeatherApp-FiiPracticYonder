@@ -8,6 +8,8 @@ import com.example.weatherapp.repository.UserModelRepository;
 import com.example.weatherapp.service.interfaces.UserService;
 import com.example.weatherapp.utils.CustomBeanUtils;
 import jakarta.transaction.Transactional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,6 +19,7 @@ public class UserServiceImpl implements UserService {
 
     public final UserModelRepository userModelRepository;
     public final UserMapper userMapper;
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(UserModelRepository userModelRepository, UserDtoConverter userMapper) {
         this.userModelRepository = userModelRepository;
@@ -30,8 +33,13 @@ public class UserServiceImpl implements UserService {
 
     public List<UserDto> getUsers() {
 
+        log.info("Fetching users data...");
         List<UserModel> userModels = userModelRepository.findAll();
 
+        if (userModels.isEmpty()) {
+            log.info("No users found.");
+            return List.of();
+        }
         return userModels.stream()
                 .map(userMapper::toDto)
                 .toList();

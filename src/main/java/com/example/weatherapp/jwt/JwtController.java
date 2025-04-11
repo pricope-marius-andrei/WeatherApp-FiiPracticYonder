@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.logging.Logger;
+
 @RestController
 @CrossOrigin
 public class JwtController {
@@ -26,6 +28,8 @@ public class JwtController {
     private final AuthenticationManager authenticationManager;
 
     private final JwtUtil tokenManager;
+
+    private final Logger logger = Logger.getLogger(JwtController.class.getName());
 
 
 
@@ -47,8 +51,11 @@ public class JwtController {
             return ResponseEntity.badRequest().body(new JwtResponseModel("User not found"));
         }
 
+        logger.info("User found: " + userDetails.getUsername());
+
         final String jwtToken = tokenManager.generateJWTToken(userDetails);
 
+        logger.info("The JWT Token was generated!");
 
         try {
             authenticationManager.authenticate(
@@ -59,9 +66,6 @@ public class JwtController {
         catch (BadCredentialsException e) {
             throw new Exception("INVALID_CREDENTIALS", e);
         }
-
-
-
 
       return ResponseEntity.ok(new JwtResponseModel(jwtToken));
     }
