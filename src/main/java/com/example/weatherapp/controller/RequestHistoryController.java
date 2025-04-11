@@ -45,7 +45,6 @@ public class RequestHistoryController {
 
         WeatherDto weatherDto = weatherService.getWeatherDetails(latitude, longitude);
 
-        RequestHistory requestHistory = new RequestHistory();
 
         UserModel userModel = userMapper.toEntity(userService.getUserByUsername(userDetails.getUsername()));
 
@@ -57,6 +56,8 @@ public class RequestHistoryController {
         emailService.sendEmail(userModel.getUsername() + "@gmail.com", "Weather Request", weatherDto.toString());
 
         userModel.setVersion(0L);
+
+        RequestHistory requestHistory = new RequestHistory();
 
         requestHistory.setUser(userModel);
         requestHistory.setLat(latitude);

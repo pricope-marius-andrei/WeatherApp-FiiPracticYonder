@@ -1,5 +1,6 @@
 package com.example.weatherapp.controller;
 
+import com.example.weatherapp.controller.annotation.LogRequestHistory;
 import com.example.weatherapp.dto.WeatherDto;
 import com.example.weatherapp.service.WeatherServiceImpl;
 import com.example.weatherapp.service.interfaces.WeatherService;
@@ -19,6 +20,7 @@ public class WeatherController {
         this.weatherService = weatherServiceImpl;
     }
 
+    @LogRequestHistory
     @GetMapping("/details")
     public ResponseEntity<WeatherDto> getDetails(@RequestParam double lat, @RequestParam double lon) {
         WeatherDto response = weatherService.getWeatherDetails(lat, lon);
