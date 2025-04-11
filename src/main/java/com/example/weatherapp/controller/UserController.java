@@ -23,52 +23,12 @@ public class UserController {
         this.userService = userService;
     }
 
-//    @PostConstruct
-//    public void init() {
-//        User user = new User();
-//
-//        List<String> names = List.of(new String[]{"John Doe", "Jane Doe", "John Smith", "Jane Smith"});
-//        String name = names.get(new Random().nextInt(names.size()));
-//
-//        List<String> passwords = List.of(new String[]{"password", "password1", "password2", "password3"});
-//        String password = BCrypt.hashpw(passwords.get(new Random().nextInt(passwords.size())), BCrypt.gensalt());
-//
-//        user.setName(name);
-//
-//        user.setPassword(password);
-//        user.setUsername(name.toLowerCase(Locale.ROOT).replace(" ", "."));
-//
-//        user.setUserProfile(null);
-//        user.setRequestHistories(null);
-//
-//        userService.saveUser(user);
-//    }
-
     @GetMapping
     public ResponseEntity<List<UserDto>> getAllUsers() {
 
         List<UserDto> users = userService.getUsers();
 
         return ResponseEntity.ok(users);
-    }
-
-    @PostMapping
-    public ResponseEntity<Object> saveUser(@RequestBody UserModel userModel) {
-
-        userModel.setPassword(BCrypt.hashpw(userModel.getPassword(), BCrypt.gensalt()));
-
-        try {
-            userService.saveUser(userModel);
-        } catch (Exception e) {
-            Map<String, String> response = new HashMap<>();
-            response.put("message", "User was not created successfully!");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "User was created successfully!");
-
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}")
