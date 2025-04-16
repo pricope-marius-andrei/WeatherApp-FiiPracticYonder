@@ -1,5 +1,6 @@
 package com.example.weatherapp.service;
 import com.example.weatherapp.dto.WeatherDto;
+import com.example.weatherapp.service.interfaces.WeatherService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -7,7 +8,7 @@ import org.springframework.web.client.RestClient;
 
 @Service
 @PropertySource("classpath:application.properties")
-public class WeatherServiceImpl implements com.example.weatherapp.service.interfaces.WeatherService {
+public class WeatherServiceImpl implements WeatherService {
 
     @Value(value = "${api.key}")
     private String API_KEY;
@@ -23,11 +24,17 @@ public class WeatherServiceImpl implements com.example.weatherapp.service.interf
 
     public WeatherDto getWeatherDetails(double lat, double lon) {
 
-        var response = restClient.get()
+        return restClient.get()
                 .uri(API_ROOT +  "?&key=" + API_KEY + "&q=" + lat + "," + lon + "&aqi=yes")
                 .retrieve()
                 .body(WeatherDto.class);
+    }
 
-        return response;
+    @Override
+    public WeatherDto getWeatherDetailsByLocation(String location) {
+        return restClient.get()
+                .uri(API_ROOT + "?&key=" + API_KEY + "&q=" + location + "&aqi=yes")
+                .retrieve()
+                .body(WeatherDto.class);
     }
 }
