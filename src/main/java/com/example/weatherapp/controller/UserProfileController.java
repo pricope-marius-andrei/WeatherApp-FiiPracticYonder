@@ -6,6 +6,7 @@ import com.example.weatherapp.dto.UserProfileDto;
 import com.example.weatherapp.service.UserProfileServiceImpl;
 import com.example.weatherapp.service.interfaces.UserProfileService;
 import com.example.weatherapp.service.interfaces.UserService;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,6 +34,7 @@ public class UserProfileController {
     }
 
     @GetMapping("/{id}")
+    @Cacheable(value = "userProfiles", key = "#id")
     public UserProfileDto getUserProfileById(@PathVariable Long id) {
         return userProfileServiceImpl.getUserProfileById(id);
     }
