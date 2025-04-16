@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 @Component
 public class JwtFilter extends OncePerRequestFilter {
@@ -20,6 +21,8 @@ public class JwtFilter extends OncePerRequestFilter {
     private final JwtUserDetailsService jwtUserDetailsService;
 
     private final JwtUtil tokenManager;
+
+    private final Logger logger = Logger.getLogger(JwtFilter.class.getName());
 
     public JwtFilter(JwtUserDetailsService jwtUserDetailsService, JwtUtil tokenManager) {
         this.jwtUserDetailsService = jwtUserDetailsService;
@@ -47,7 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         }
         else {
-            System.out.println("JWT Token does not begin with Bearer String");
+            logger.info("JWT Token does not begin with Bearer String");
         }
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
