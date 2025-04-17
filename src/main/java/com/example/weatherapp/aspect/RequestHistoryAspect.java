@@ -10,10 +10,11 @@ import com.example.weatherapp.service.interfaces.UserService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
+import java.util.logging.Logger;
 
 @Aspect
 @Component
@@ -22,6 +23,7 @@ public class RequestHistoryAspect {
     private final EmailService emailService;
     private final UserService userService;
     private final UserMapper userMapper;
+    private final Logger logger = Logger.getLogger(RequestHistoryAspect.class.getName());
 
     public RequestHistoryAspect(RequestHistoryService requestHistoryService, EmailService emailService, UserService userService, UserMapper userMapper) {
         this.requestHistoryService = requestHistoryService;
@@ -30,23 +32,64 @@ public class RequestHistoryAspect {
         this.userMapper = userMapper;
     }
 
+    private enum RequestType {
+        COORDINATES, LOCATION_STRING, UNKNOWN
+    }
+
+    private RequestType getRequestType(Object[] args) {
+        if (args.length == 2 && args[0] instanceof Double && args[1] instanceof Double) {
+            return RequestType.COORDINATES;
+        } else if (args.length == 1 && args[0] instanceof String) {
+            return RequestType.LOCATION_STRING;
+        } else {
+            return RequestType.UNKNOWN;
+        }
+    }
+
     @AfterReturning(
             pointcut = "@annotation(com.example.weatherapp.controller.annotation.LogRequestHistory)",
             returning = "response"
     )
     public void logRequestHistory(JoinPoint joinPoint, Object response) {
-
-        if (!(response instanceof ResponseEntity<?> res && res.getBody() instanceof WeatherDto weatherDto)) {
+        logger.info("Logging request history...");
+        if (!(response instanceof WeatherDto weatherDto)) {
             return;
         }
 
+        logger.info("Response: " + weatherDto);
+
         Object[] args = joinPoint.getArgs();
-        double lat = (double) args[0];
-        double lon = (double) args[1];
+
+        //I applied this aspect to the method getWeatherDetails and getWeatherDetailsByLocation,
+        //so I need to check the structure of the args
+        double lat = 0.0, lon = 0.0;
+        String location = null;
+
+
+
+        RequestType requestType = getRequestType(args);
+
+        logger.info("Request type: " + requestType);
+
+        switch (requestType) {
+            case COORDINATES -> {
+                lat = (Double) args[0];
+                lon = (Double) args[1];
+                logger.info("Coordinates: " + lat + ", " + lon);
+            }
+            case LOCATION_STRING -> {
+                location = (String) args[0];
+                logger.info("Location: " + location);
+            }
+            case UNKNOWN -> {
+                return; // Don't handle unknown input structure
+            }
+        }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()) return;
 
+        logger.info("Authenticated user: " + auth.getName());
 
         String username = auth.getName();
         UserModel userModel = userMapper.toEntity(userService.getUserByUsername(username));
@@ -61,9 +104,12 @@ public class RequestHistoryAspect {
         requestHistory.setUser(userModel);
         requestHistory.setLat(lat);
         requestHistory.setLon(lon);
+        requestHistory.setLocation(location);
         requestHistory.setResponse(weatherDto.toString());
 
         userModel.addRequest(requestHistory);
         requestHistoryService.addRequestHistory(requestHistory);
+
+        logger.info("Request history saved for user: " + username);
     }
 }

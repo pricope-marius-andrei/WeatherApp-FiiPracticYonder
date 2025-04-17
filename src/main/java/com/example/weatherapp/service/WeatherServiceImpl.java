@@ -1,4 +1,5 @@
 package com.example.weatherapp.service;
+import com.example.weatherapp.controller.annotation.LogRequestHistory;
 import com.example.weatherapp.dto.WeatherDto;
 import com.example.weatherapp.service.interfaces.WeatherService;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +23,8 @@ public class WeatherServiceImpl implements WeatherService {
         this.restClient = RestClient.create();
     }
 
+    @Override
+    @LogRequestHistory
     public WeatherDto getWeatherDetails(double lat, double lon) {
 
         return restClient.get()
@@ -31,6 +34,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     @Override
+    @LogRequestHistory
     public WeatherDto getWeatherDetailsByLocation(String location) {
         return restClient.get()
                 .uri(API_ROOT + "?&key=" + API_KEY + "&q=" + location + "&aqi=yes")

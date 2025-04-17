@@ -10,18 +10,21 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/weather")
 public class WeatherController {
 
     private final WeatherService weatherService;
+    private final Logger logger = Logger.getLogger(WeatherController.class.getName());
 
     public WeatherController(WeatherServiceImpl weatherServiceImpl) {
         this.weatherService = weatherServiceImpl;
     }
 
-    @LogRequestHistory
     @GetMapping("/details")
     public ResponseEntity<WeatherDto> getDetails(@RequestParam double lat, @RequestParam double lon) {
         WeatherDto response = weatherService.getWeatherDetails(lat, lon);
@@ -36,11 +39,15 @@ public class WeatherController {
 
         List<WeatherDto> responses = new ArrayList<>();
 
-        for (String location : locationRequest.getLocations()) {
-            WeatherDto response = weatherService.getWeatherDetailsByLocation(location);
-
-            if (response != null) {
-                responses.add(response);
+        try(ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            for (String location : locationRequest.getLocations()) {
+                executor.submit(() -> {
+                    logger.info("Fetching weather details for location: " + location);
+                    WeatherDto response = weatherService.getWeatherDetailsByLocation(location);
+                    if (response != null) {
+                        responses.add(response);
+                    }
+                });
             }
         }
 

@@ -15,6 +15,9 @@ public class RequestHistory {
     @Column(columnDefinition = "double precision")
     private double lon;
 
+    @Column
+    private String location;
+
     @Column(length = 2047)
     private String response;
 
@@ -115,5 +118,13 @@ public class RequestHistory {
 
     public void setVersion(Long version) {
         this.version = version;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }
