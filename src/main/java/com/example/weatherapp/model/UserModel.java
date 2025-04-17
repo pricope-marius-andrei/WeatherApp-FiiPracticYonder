@@ -25,7 +25,9 @@ public class UserModel {
     @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
     private UserProfile userProfile;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    //I used EAGER fetch type to avoid lazy loading issues
+    //especially when using conversion between UserModel and UserDto
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private Set<RequestHistory> requestHistories;
 
     @Version

@@ -6,6 +6,7 @@ import com.example.weatherapp.model.LocationRequest;
 import com.example.weatherapp.service.WeatherServiceImpl;
 import com.example.weatherapp.service.interfaces.WeatherService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.concurrent.DelegatingSecurityContextRunnable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -41,13 +42,15 @@ public class WeatherController {
 
         try(ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
             for (String location : locationRequest.getLocations()) {
-                executor.submit(() -> {
+                Runnable task = new DelegatingSecurityContextRunnable(() -> {
                     logger.info("Fetching weather details for location: " + location);
                     WeatherDto response = weatherService.getWeatherDetailsByLocation(location);
                     if (response != null) {
                         responses.add(response);
                     }
                 });
+
+                executor.submit(task);
             }
         }
 

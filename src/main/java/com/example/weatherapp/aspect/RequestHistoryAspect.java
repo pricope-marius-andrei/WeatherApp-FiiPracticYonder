@@ -1,5 +1,6 @@
 package com.example.weatherapp.aspect;
 
+import com.example.weatherapp.dto.UserDto;
 import com.example.weatherapp.dto.WeatherDto;
 import com.example.weatherapp.mapper.UserMapper;
 import com.example.weatherapp.model.RequestHistory;
@@ -12,6 +13,7 @@ import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 
 import java.util.logging.Logger;
@@ -87,29 +89,52 @@ public class RequestHistoryAspect {
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) return;
+        
+        if (auth == null) {
+            logger.warning("Authentication is null");
+            return;
+        }
 
-        logger.info("Authenticated user: " + auth.getName());
+        if (!auth.isAuthenticated()) {
+            logger.warning("Authentication is not authenticated");
+            return;
+        }
 
-        String username = auth.getName();
-        UserModel userModel = userMapper.toEntity(userService.getUserByUsername(username));
 
-        if (userModel == null) return;
+        try {
+            String username = auth.getName();
+            logger.info("Authenticated user: " + username);
 
-        emailService.sendEmail(username + "@gmail.com", "Weather Request", weatherDto.toString());
+            UserDto user = userService.getUserByUsername(username);
+            logger.info("Fetched user from service: " + user);
 
-        userModel.setVersion(0L);
+            user.getRequestHistories().size(); // triggers lazy load while Hibernate session is alive
 
-        RequestHistory requestHistory = new RequestHistory();
-        requestHistory.setUser(userModel);
-        requestHistory.setLat(lat);
-        requestHistory.setLon(lon);
-        requestHistory.setLocation(location);
-        requestHistory.setResponse(weatherDto.toString());
+            UserModel userModel = userMapper.toEntity(user);
+            logger.info("Mapped user model: " + userModel);
 
-        userModel.addRequest(requestHistory);
-        requestHistoryService.addRequestHistory(requestHistory);
 
-        logger.info("Request history saved for user: " + username);
+            if (userModel == null) return;
+
+            emailService.sendEmail(username + "@gmail.com", "Weather Request", weatherDto.toString());
+
+            userModel.setVersion(0L);
+
+            RequestHistory requestHistory = new RequestHistory();
+            requestHistory.setUser(userModel);
+            requestHistory.setLat(lat);
+            requestHistory.setLon(lon);
+            requestHistory.setLocation(location);
+            requestHistory.setResponse(weatherDto.toString());
+
+            userModel.addRequest(requestHistory);
+            requestHistoryService.addRequestHistory(requestHistory);
+            logger.info("Request history saved for user: " + username);
+        }
+        catch (Exception e) {
+            logger.warning("Error while logging request history: " + e.getMessage());
+            return;
+        }
+
     }
 }
