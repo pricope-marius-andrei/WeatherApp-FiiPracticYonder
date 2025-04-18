@@ -29,6 +29,14 @@ public class JwtFilter extends OncePerRequestFilter {
         this.tokenManager = tokenManager;
     }
 
+    private void writeErrorResponse(HttpServletResponse response, String message) throws IOException {
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write("{\"error\": \"" + message + "\"}");
+        response.getWriter().flush();
+    }
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String tokenHeader = request.getHeader("Authorization");
@@ -40,17 +48,29 @@ public class JwtFilter extends OncePerRequestFilter {
             try{
                 username = tokenManager.extractUsername(token);
             }
-            catch (IllegalArgumentException e)
-            {
-                System.out.println("Unable to get JWT Token");
-            }
             catch (ExpiredJwtException e)
             {
-                System.out.println("JWT Token has expired");
+                logger.severe("Token has expired");
+                this.writeErrorResponse(response, "Token has expired");
+                return;
+            }
+            catch (IllegalArgumentException e)
+            {
+                logger.severe("Unable to get JWT Token");
+                this.writeErrorResponse(response, "Unable to get JWT Token");
+                return;
+            }
+            catch (Exception e)
+            {
+                logger.severe("JWT Token is malformed");
+                this.writeErrorResponse(response, "JWT Token is malformed");
+                return;
             }
         }
         else {
-            logger.info("JWT Token does not begin with Bearer String");
+            logger.severe("JWT Token does not begin with Bearer String");
+            this.writeErrorResponse(response, "JWT Token does not begin with Bearer String");
+            return;
         }
 
         if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
