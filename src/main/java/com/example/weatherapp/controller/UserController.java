@@ -76,7 +76,6 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
-    // Problem: When I don't pass the user_profile id in the body, it creates a new user_profile
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
 

@@ -3,10 +3,12 @@ package com.example.weatherapp.controller;
 import com.example.weatherapp.dto.UserDto;
 import com.example.weatherapp.model.UserProfile;
 import com.example.weatherapp.dto.UserProfileDto;
-import com.example.weatherapp.service.UserProfileServiceImpl;
 import com.example.weatherapp.service.interfaces.UserProfileService;
 import com.example.weatherapp.service.interfaces.UserService;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,29 +22,33 @@ import java.util.Map;
 @RequestMapping("user-profile")
 public class UserProfileController {
 
-    private final UserProfileService userProfileServiceImpl;
+    private final UserProfileService userProfileService;
     private final UserService userService;
 
-    public UserProfileController(UserProfileServiceImpl userProfileServiceImpl, UserService userService) {
-        this.userProfileServiceImpl = userProfileServiceImpl;
+    public UserProfileController(UserProfileService userProfileServiceImpl, UserService userService) {
+        this.userProfileService = userProfileServiceImpl;
         this.userService = userService;
     }
 
     @GetMapping
-    public List<UserProfileDto> getAllUserProfiles() {
-        return userProfileServiceImpl.getUserProfiles();
+    public List<UserProfileDto> getAllUserProfiles(
+            @RequestParam (defaultValue = "0") int page,
+            @RequestParam(defaultValue = "2") int size,
+            @RequestParam(defaultValue = "id") String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+        return userProfileService.getUserProfiles(pageable).getContent();
     }
 
     @GetMapping("/{id}")
     @Cacheable(value = "userProfiles", key = "#id")
     public UserProfileDto getUserProfileById(@PathVariable Long id) {
-        return userProfileServiceImpl.getUserProfileById(id);
+        return userProfileService.getUserProfileById(id);
     }
 
     @PostMapping
     public ResponseEntity<Object> saveUserProfile(@RequestBody UserProfile userProfile) {
 
-        UserProfileDto userProfileDto = userProfileServiceImpl.saveUserProfile(userProfile);
+        UserProfileDto userProfileDto = userProfileService.saveUserProfile(userProfile);
 
         if (userProfileDto == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -58,7 +64,7 @@ public class UserProfileController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Object> updateUserProfile(@PathVariable Long id, @RequestBody UserProfile userProfile) {
-        userProfileServiceImpl.updateUserProfile(id, userProfile);
+        userProfileService.updateUserProfile(id, userProfile);
 
         Map<String, Object> response = Map.of(
                 "id", id,
@@ -73,7 +79,7 @@ public class UserProfileController {
 
         UserDto user = userService.getUserByUsername(userDetails.getUsername());
 
-        userProfileServiceImpl.deleteUserProfile(user.getId());
+        userProfileService.deleteUserProfile(user.getId());
 
         Map<String, String> response = Map.of(
                 "message", "User profile deleted successfully"

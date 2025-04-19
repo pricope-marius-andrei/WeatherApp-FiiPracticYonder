@@ -5,9 +5,8 @@ public class UserProfileDto {
     private Long id;
     private String email;
     private Boolean emailNotification;
-    private Long version;
 
-    public UserProfileDto(Long id, String email, Boolean emailNotification, Long version) {
+    public UserProfileDto(Long id, String email, Boolean emailNotification) {
         this.id = id;
         this.email = email;
         this.emailNotification = emailNotification;
@@ -38,13 +37,5 @@ public class UserProfileDto {
 
     public void setEmailNotification(Boolean emailNotification) {
         this.emailNotification = emailNotification;
-    }
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
     }
 }

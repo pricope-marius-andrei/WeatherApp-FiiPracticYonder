@@ -10,9 +10,9 @@ import com.example.weatherapp.repository.UserModelRepository;
 import com.example.weatherapp.service.interfaces.UserProfileService;
 import com.example.weatherapp.utils.CustomBeanUtils;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserProfileServiceImpl implements UserProfileService {
@@ -27,10 +27,11 @@ public class UserProfileServiceImpl implements UserProfileService {
         this.userProfileMapper = userProfileMapper;
     }
 
-    public List<UserProfileDto> getUserProfiles() {
-        return userProfileRepository.findAll().stream()
-                .map(userProfileMapper::toDto)
-                .toList();
+    public Page<UserProfileDto> getUserProfiles(Pageable pageable) {
+
+        Page<UserProfile> userProfiles = userProfileRepository.findAll(pageable);
+
+        return userProfiles.map(userProfileMapper::toDto);
     }
 
     public UserProfileDto getUserProfileById(Long id) {
