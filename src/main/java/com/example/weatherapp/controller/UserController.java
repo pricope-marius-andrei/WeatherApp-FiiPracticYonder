@@ -1,6 +1,5 @@
 package com.example.weatherapp.controller;
 
-import com.example.weatherapp.model.UserModel;
 import com.example.weatherapp.dto.UserDto;
 import com.example.weatherapp.service.interfaces.UserService;
 import org.springframework.data.domain.PageRequest;
@@ -8,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -74,16 +72,15 @@ public class UserController {
         userService.deleteUserById(id);
 
         Map<String, String> response = new HashMap<>();
-        response.put("message", "User was deleted successfully!");
+        response.put("message", "User deleted successfully!");
         return new ResponseEntity<>(response, HttpStatus.NO_CONTENT);
     }
 
     // Problem: When I don't pass the user_profile id in the body, it creates a new user_profile
-    @PatchMapping("/{id}")
-    public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody UserModel userModel) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
 
-        if(!userModel.getId().equals(id))
-            return new ResponseEntity<>("User ID in the path and body do not match!", HttpStatus.BAD_REQUEST);
+        userDto.setId(id);
 
         UserDto existingUser = userService.getUserById(id);
 
@@ -94,12 +91,15 @@ public class UserController {
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
         }
 
-        userModel.setPassword(BCrypt.hashpw(userModel.getPassword(), BCrypt.gensalt()));
-        userService.updateUser(id, userModel);
+        UserDto updatedUser = userService.updateUser(id, userDto);
 
-        Map<String, String> response = new HashMap<>();
-        response.put("message", "User was updated successfully!");
+        if (updatedUser == null) {
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "User not found!");
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 }

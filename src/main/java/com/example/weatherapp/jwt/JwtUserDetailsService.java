@@ -4,6 +4,7 @@ import com.example.weatherapp.exception.PasswordIsNullException;
 import com.example.weatherapp.exception.UsernameAlreadyExistsException;
 import com.example.weatherapp.exception.UsernameIsNullException;
 import com.example.weatherapp.model.UserModel;
+import com.example.weatherapp.model.UserProfile;
 import com.example.weatherapp.repository.UserModelRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,10 +27,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-       System.out.println("Loading user by username: " + username);
        UserModel user = userModelRepository.findByUsername(username);
-
-       System.out.println("User found: " + user);
 
         if (user == null) {
             throw new UsernameNotFoundException("User not found with username: " + username);
@@ -55,6 +53,12 @@ public class JwtUserDetailsService implements UserDetailsService {
         if(existingUser != null)
         {
             throw new UsernameAlreadyExistsException(userModel.getUsername());
+        }
+
+        if(userModel.getUserProfile() == null)
+        {
+            UserProfile userProfile = new UserProfile();
+            userModel.setUserProfile(userProfile);
         }
 
         userModel.setPassword(BCrypt.hashpw(userModel.getPassword(), BCrypt.gensalt()));

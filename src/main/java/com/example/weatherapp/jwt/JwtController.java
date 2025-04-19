@@ -5,7 +5,9 @@ import com.example.weatherapp.exception.UsernameAlreadyExistsException;
 import com.example.weatherapp.exception.UsernameIsNullException;
 import com.example.weatherapp.jwt.model.JwtRequestModel;
 import com.example.weatherapp.jwt.model.JwtResponseModel;
+import com.example.weatherapp.jwt.model.UserRegisterModel;
 import com.example.weatherapp.model.UserModel;
+import com.example.weatherapp.model.UserProfile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -71,9 +73,21 @@ public class JwtController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserModel request) {
+    public ResponseEntity<String> register(@RequestBody UserRegisterModel request) {
         try {
-            userDetailsService.saveUser(request);
+
+            UserModel user = new UserModel();
+            user.setUsername(request.getUsername());
+            user.setPassword(request.getPassword());
+
+            if(user.getUserProfile() == null)
+            {
+                user.setUserProfile(new UserProfile());
+            }
+
+            user.getUserProfile().setEmail(request.getEmail());
+
+            userDetailsService.saveUser(user);
         } catch (UsernameAlreadyExistsException | UsernameIsNullException | PasswordIsNullException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

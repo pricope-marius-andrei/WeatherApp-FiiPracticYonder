@@ -110,9 +110,13 @@ public class RequestHistoryAspect {
             throw new IllegalStateException("User model is null");
         }
 
-        emailService.sendEmail(username + "@gmail.com", "Weather Request", weatherDto.toString());
+        if(userModel.getUserProfile().getEmailNotification() != null && userModel.getUserProfile().getEmailNotification()) {
+            emailService.sendEmail(username + "@gmail.com", "Weather Request", weatherDto.toString());
+        } else {
+            logger.info("User {} has disabled email notifications", username);
+        }
 
-        userModel.setVersion(0L); //
+        userModel.setVersion(0L);
         RequestHistory requestHistory = new RequestHistory();
         requestHistory.setUser(userModel);
         requestHistory.setLat(lat);

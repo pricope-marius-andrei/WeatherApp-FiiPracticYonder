@@ -66,16 +66,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void updateUser(Long id, UserModel userModel) {
+    public UserDto updateUser(Long id, UserDto userDto) {
 
         UserModel existingUserModel = userModelRepository.findById(id).orElse(null);
 
         if (existingUserModel == null) {
-            return;
+            return null;
         }
 
-        CustomBeanUtils.copyNonNullProperties(userModel, existingUserModel);
+        CustomBeanUtils.copyNonNullProperties(userDto, existingUserModel);
         userMapper.toDto(userModelRepository.save(existingUserModel));
+
+        return userMapper.toDto(existingUserModel);
     }
 
 }
