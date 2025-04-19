@@ -1,7 +1,7 @@
 package com.example.weatherapp.controller;
 
-import com.example.weatherapp.controller.annotation.LogRequestHistory;
 import com.example.weatherapp.dto.WeatherDto;
+import com.example.weatherapp.exception.EmailSenderException;
 import com.example.weatherapp.model.LocationRequest;
 import com.example.weatherapp.service.WeatherServiceImpl;
 import com.example.weatherapp.service.interfaces.WeatherService;
@@ -33,25 +33,40 @@ public class WeatherController {
     }
 
     @GetMapping("/details/locations")
-    public ResponseEntity<List<WeatherDto>> getDetailsByLocation(@RequestBody LocationRequest locationRequest) {
+    public ResponseEntity<Object> getDetailsByLocation(@RequestBody LocationRequest locationRequest) {
+
         if (locationRequest == null || locationRequest.getLocations() == null || locationRequest.getLocations().isEmpty()) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body("Invalid request: No locations provided.");
         }
 
         List<WeatherDto> responses = new ArrayList<>();
+        List<Exception> exceptions = new ArrayList<>();
 
         try(ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+
             for (String location : locationRequest.getLocations()) {
                 Runnable task = new DelegatingSecurityContextRunnable(() -> {
-                    logger.info("Fetching weather details for location: " + location);
-                    WeatherDto response = weatherService.getWeatherDetailsByLocation(location);
-                    if (response != null) {
-                        responses.add(response);
+                    try {
+                        WeatherDto response = weatherService.getWeatherDetailsByLocation(location);
+                        if (response != null) {
+                            responses.add(response);
+                        }
+                    }
+                    catch (EmailSenderException e) {
+                        logger.severe("Error fetching weather details for location: " + location + " - " + e.getMessage());
+                        synchronized (exceptions) {
+                            exceptions.add(e);
+                        }
                     }
                 });
 
                 executor.submit(task);
             }
+
+        }
+
+        for(Exception e : exceptions) {
+            return ResponseEntity.status(500).body("Error fetching weather details: " + e.getMessage());
         }
 
         return ResponseEntity.ok(responses);

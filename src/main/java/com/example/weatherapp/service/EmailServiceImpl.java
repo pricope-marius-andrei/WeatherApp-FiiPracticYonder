@@ -1,5 +1,6 @@
 package com.example.weatherapp.service;
 
+import com.example.weatherapp.exception.EmailSenderException;
 import com.example.weatherapp.service.interfaces.EmailService;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -26,6 +27,13 @@ public class EmailServiceImpl implements EmailService {
         message.setText(body);
 
         logger.info("Sending email to: " + to);
-        mailSender.send(message);
+
+        try {
+            mailSender.send(message);
+        }
+        catch (Exception e) {
+          throw new EmailSenderException("Failed to send email", e);
+        }
+
     }
 }

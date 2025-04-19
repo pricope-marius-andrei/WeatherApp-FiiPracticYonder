@@ -8,15 +8,14 @@ import com.example.weatherapp.model.UserModel;
 import com.example.weatherapp.service.interfaces.EmailService;
 import com.example.weatherapp.service.interfaces.RequestHistoryService;
 import com.example.weatherapp.service.interfaces.UserService;
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
-
-import java.util.logging.Logger;
 
 @Aspect
 @Component
@@ -25,7 +24,7 @@ public class RequestHistoryAspect {
     private final EmailService emailService;
     private final UserService userService;
     private final UserMapper userMapper;
-    private final Logger logger = Logger.getLogger(RequestHistoryAspect.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(RequestHistoryAspect.class);
 
     public RequestHistoryAspect(RequestHistoryService requestHistoryService, EmailService emailService, UserService userService, UserMapper userMapper) {
         this.requestHistoryService = requestHistoryService;
@@ -48,93 +47,82 @@ public class RequestHistoryAspect {
         }
     }
 
-    @AfterReturning(
-            pointcut = "@annotation(com.example.weatherapp.controller.annotation.LogRequestHistory)",
-            returning = "response"
-    )
-    public void logRequestHistory(JoinPoint joinPoint, Object response) {
+    @Around("@annotation(com.example.weatherapp.controller.annotation.LogRequestHistory)")
+    public Object logRequestHistory(ProceedingJoinPoint joinPoint) throws Throwable {
         logger.info("Logging request history...");
-        if (!(response instanceof WeatherDto weatherDto)) {
-            return;
+
+        Object result;
+
+        try {
+            result = joinPoint.proceed();
+        } catch (Exception e) {
+            logger.error("Error during method execution", e);
+            throw e;
         }
 
-        logger.info("Response: " + weatherDto);
-
-        Object[] args = joinPoint.getArgs();
+        if (!(result instanceof WeatherDto weatherDto)) {
+            return result;
+        }
 
         //I applied this aspect to the method getWeatherDetails and getWeatherDetailsByLocation,
         //so I need to check the structure of the args
         double lat = 0.0, lon = 0.0;
         String location = null;
-
-
+        Object[] args = joinPoint.getArgs();
 
         RequestType requestType = getRequestType(args);
-
-        logger.info("Request type: " + requestType);
 
         switch (requestType) {
             case COORDINATES -> {
                 lat = (Double) args[0];
                 lon = (Double) args[1];
-                logger.info("Coordinates: " + lat + ", " + lon);
             }
             case LOCATION_STRING -> {
                 location = (String) args[0];
-                logger.info("Location: " + location);
             }
             case UNKNOWN -> {
-                return; // Don't handle unknown input structure
+                logger.warn("Unknown request type");
+
             }
         }
 
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         
         if (auth == null) {
-            logger.warning("Authentication is null");
-            return;
+            logger.warn("Authentication is null");
+            throw new IllegalStateException("Authentication is null");
         }
 
         if (!auth.isAuthenticated()) {
-            logger.warning("Authentication is not authenticated");
-            return;
+            logger.warn("Authentication is not authenticated");
+            throw new IllegalStateException("Authentication is not authenticated");
         }
 
+        String username = auth.getName();
 
-        try {
-            String username = auth.getName();
-            logger.info("Authenticated user: " + username);
+        UserDto user = userService.getUserByUsername(username);
 
-            UserDto user = userService.getUserByUsername(username);
-            logger.info("Fetched user from service: " + user);
-
-            user.getRequestHistories().size(); // triggers lazy load while Hibernate session is alive
-
-            UserModel userModel = userMapper.toEntity(user);
-            logger.info("Mapped user model: " + userModel);
+        UserModel userModel = userMapper.toEntity(user);
 
 
-            if (userModel == null) return;
-
-            emailService.sendEmail(username + "@gmail.com", "Weather Request", weatherDto.toString());
-
-            userModel.setVersion(0L);
-
-            RequestHistory requestHistory = new RequestHistory();
-            requestHistory.setUser(userModel);
-            requestHistory.setLat(lat);
-            requestHistory.setLon(lon);
-            requestHistory.setLocation(location);
-            requestHistory.setResponse(weatherDto.toString());
-
-            userModel.addRequest(requestHistory);
-            requestHistoryService.addRequestHistory(requestHistory);
-            logger.info("Request history saved for user: " + username);
-        }
-        catch (Exception e) {
-            logger.warning("Error while logging request history: " + e.getMessage());
-            return;
+        if (userModel == null) {
+            logger.error("User model is null");
+            throw new IllegalStateException("User model is null");
         }
 
+        emailService.sendEmail(username + "@gmail.com", "Weather Request", weatherDto.toString());
+
+        userModel.setVersion(0L); //
+        RequestHistory requestHistory = new RequestHistory();
+        requestHistory.setUser(userModel);
+        requestHistory.setLat(lat);
+        requestHistory.setLon(lon);
+        requestHistory.setLocation(location);
+        requestHistory.setResponse(weatherDto.toString());
+
+        userModel.addRequest(requestHistory);
+        requestHistoryService.addRequestHistory(requestHistory);
+
+        return result;
     }
 }
