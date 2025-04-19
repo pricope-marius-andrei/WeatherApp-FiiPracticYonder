@@ -8,41 +8,30 @@ import com.example.weatherapp.repository.UserModelRepository;
 import com.example.weatherapp.service.interfaces.UserService;
 import com.example.weatherapp.utils.CustomBeanUtils;
 import jakarta.transaction.Transactional;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     public final UserModelRepository userModelRepository;
     public final UserMapper userMapper;
-    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     public UserServiceImpl(UserModelRepository userModelRepository, UserDtoConverter userMapper) {
         this.userModelRepository = userModelRepository;
         this.userMapper = userMapper;
     }
 
-    @Transactional
-    public void saveUser(UserModel userModel) {
-        userModelRepository.save(userModel);
-    }
+    public Page<UserDto> getUsers(Pageable pageable) {
 
-    public List<UserDto> getUsers() {
-
-        log.info("Fetching users data...");
-        List<UserModel> userModels = userModelRepository.findAll();
+        Page<UserModel> userModels = userModelRepository.findAll(pageable);
 
         if (userModels.isEmpty()) {
-            log.info("No users found.");
-            return List.of();
+            return Page.empty();
         }
-        return userModels.stream()
-                .map(userMapper::toDto)
-                .toList();
+
+        return userModels.map(userMapper::toDto);
     }
 
     @Override

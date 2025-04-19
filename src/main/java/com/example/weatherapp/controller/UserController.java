@@ -2,8 +2,10 @@ package com.example.weatherapp.controller;
 
 import com.example.weatherapp.model.UserModel;
 import com.example.weatherapp.dto.UserDto;
-import com.example.weatherapp.service.UserServiceImpl;
 import com.example.weatherapp.service.interfaces.UserService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -24,9 +26,11 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers() {
+    public ResponseEntity<List<UserDto>> getAllUsers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "2") int size, @RequestParam(defaultValue = "id") String sortBy) {
 
-        List<UserDto> users = userService.getUsers();
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy).ascending());
+
+        List<UserDto> users = userService.getUsers(pageable).getContent();
 
         return ResponseEntity.ok(users);
     }
