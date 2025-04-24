@@ -33,8 +33,24 @@ public class RequestHistoryAspect {
         this.userMapper = userMapper;
     }
 
-    private enum RequestType {
-        COORDINATES, LOCATION_STRING, UNKNOWN
+
+    @Around("@annotation(com.example.weatherapp.controller.annotation.LogRequestHistory)")
+    public Object logRequestHistory(ProceedingJoinPoint joinPoint) throws Throwable {
+        logger.info("Logging request history...");
+        
+        Object result = executeTargetMethod(joinPoint);
+
+        if (!(result instanceof WeatherDto weatherDto)) {
+            return result;
+        }
+
+        RequestDetails requestDetails = extractRequestDetails(joinPoint.getArgs());
+        UserModel userModel = getAuthenticatedUser();
+
+        sendEmailNotification(weatherDto, userModel);
+        logRequest(weatherDto, userModel, requestDetails);
+
+        return result;
     }
 
     private RequestType getRequestType(Object[] args) {
@@ -47,86 +63,82 @@ public class RequestHistoryAspect {
         }
     }
 
-    @Around("@annotation(com.example.weatherapp.controller.annotation.LogRequestHistory)")
-    public Object logRequestHistory(ProceedingJoinPoint joinPoint) throws Throwable {
-        logger.info("Logging request history...");
+    private enum RequestType {
+        COORDINATES, LOCATION_STRING, UNKNOWN
+    }
 
-        Object result;
+    private void logRequest(WeatherDto weatherDto, UserModel userModel, RequestDetails requestDetails) {
+        userModel.setVersion(0L);
+        RequestHistoryModel requestHistoryModel = new RequestHistoryModel();
+        requestHistoryModel.setUser(userModel);
+        requestHistoryModel.setLat(requestDetails.lat());
+        requestHistoryModel.setLon(requestDetails.lon());
+        requestHistoryModel.setLocation(requestDetails.location());
+        requestHistoryModel.setResponse(weatherDto.toString());
+        requestHistoryModel.setAlerts(false);
+        requestHistoryModel.setDays(0);
+        requestHistoryModel.setQ(true);
+        requestHistoryModel.setAqi(true);
 
+        userModel.addRequest(requestHistoryModel);
+        requestHistoryService.addRequestHistory(requestHistoryModel);
+    }
+
+    private void sendEmailNotification(WeatherDto weatherDto, UserModel userModel) {
+        if (Boolean.TRUE.equals(userModel.getUserProfile().getEmailNotification())) {
+            String email = userModel.getUsername() + "@gmail.com";
+            emailService.sendEmail(email, "Weather Request", weatherDto.toString());
+        } else {
+            logger.info("User {} has disabled email notifications", userModel.getUsername());
+        }
+    }
+
+    private RequestDetails extractRequestDetails(Object[] args) {
+
+        RequestType requestType = getRequestType(args);
+        return switch (requestType) {
+            case COORDINATES -> {
+                double lat = (Double) args[0];
+                double lon = (Double) args[1];
+
+                yield new RequestDetails(lat, lon, null);
+            }
+            case LOCATION_STRING -> new RequestDetails(0.0, 0.0, (String) args[0]);
+            case UNKNOWN -> {
+                logger.warn("Unknown request type");
+                throw new IllegalArgumentException("Unknown request type");
+            }
+        };
+    }
+
+    private record RequestDetails(double lat, double lon, String location) {
+    }
+
+    private static Object executeTargetMethod(ProceedingJoinPoint joinPoint) throws Throwable {
         try {
-            result = joinPoint.proceed();
+            return joinPoint.proceed();
         } catch (Exception e) {
             logger.error("Error during method execution", e);
             throw e;
         }
+    }
 
-        if (!(result instanceof WeatherDto weatherDto)) {
-            return result;
-        }
-
-        //I applied this aspect to the method getWeatherDetails and getWeatherDetailsByLocation,
-        //so I need to check the structure of the args
-        double lat = 0.0, lon = 0.0;
-        String location = null;
-        Object[] args = joinPoint.getArgs();
-
-        RequestType requestType = getRequestType(args);
-
-        switch (requestType) {
-            case COORDINATES -> {
-                lat = (Double) args[0];
-                lon = (Double) args[1];
-            }
-            case LOCATION_STRING -> {
-                location = (String) args[0];
-            }
-            case UNKNOWN -> {
-                logger.warn("Unknown request type");
-
-            }
-        }
-
+    private UserModel getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
-        if (auth == null) {
-            logger.warn("Authentication is null");
-            throw new IllegalStateException("Authentication is null");
-        }
 
-        if (!auth.isAuthenticated()) {
-            logger.warn("Authentication is not authenticated");
-            throw new IllegalStateException("Authentication is not authenticated");
+        if (auth == null || !auth.isAuthenticated()) {
+            throw new IllegalStateException("User is not authenticated");
         }
 
         String username = auth.getName();
-
-        UserDto user = userService.getUserByUsername(username);
-
-        UserModel userModel = userMapper.toEntity(user);
-
+        UserDto userDto = userService.getUserByUsername(username);
+        UserModel userModel = userMapper.toEntity(userDto);
 
         if (userModel == null) {
-            logger.error("User model is null");
-            throw new IllegalStateException("User model is null");
+            throw new IllegalStateException("Mapped user model is null");
         }
 
-        if(userModel.getUserProfile().getEmailNotification() != null && userModel.getUserProfile().getEmailNotification()) {
-            emailService.sendEmail(username + "@gmail.com", "Weather Request", weatherDto.toString());
-        } else {
-            logger.info("User {} has disabled email notifications", username);
-        }
-
-        userModel.setVersion(0L);
-        RequestHistoryModel requestHistoryModel = new RequestHistoryModel();
-        requestHistoryModel.setUser(userModel);
-        requestHistoryModel.setLat(lat);
-        requestHistoryModel.setLon(lon);
-        requestHistoryModel.setLocation(location);
-        requestHistoryModel.setResponse(weatherDto.toString());
-
-        userModel.addRequest(requestHistoryModel);
-        requestHistoryService.addRequestHistory(requestHistoryModel);
-
-        return result;
+        return userModel;
     }
+
 }
