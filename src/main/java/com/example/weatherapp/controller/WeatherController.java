@@ -32,7 +32,7 @@ public class WeatherController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/details/locations")
+    @PostMapping("/details/locations")
     public ResponseEntity<Object> getDetailsByLocation(@RequestBody LocationRequestModel locationRequestModel) {
 
         if (locationRequestModel == null || locationRequestModel.getLocations() == null || locationRequestModel.getLocations().isEmpty()) {
