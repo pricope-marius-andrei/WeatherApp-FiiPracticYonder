@@ -18,17 +18,6 @@ public class RequestHistoryDto {
 
     private Boolean alerts;
 
-    public RequestHistoryDto(Long id, double lat, double lon, String response, Boolean q, Boolean aqi, Integer days, Boolean alerts) {
-        this.id = id;
-        this.lat = lat;
-        this.lon = lon;
-        this.response = response;
-        this.q = q;
-        this.aqi = aqi;
-        this.days = days;
-        this.alerts = alerts;
-    }
-
     public Long getId() {
         return id;
     }

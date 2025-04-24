@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserModelRepository extends JpaRepository<UserModel, Long>{
 
-    @Query("SELECT u FROM UserModel u WHERE u.userProfile.id = ?1")
+    @Query("SELECT u FROM UserModel u WHERE u.userProfileModel.id = ?1")
     UserModel findByProfileId(Long profileId);
 
     @Query("SELECT u FROM UserModel u WHERE u.username = ?1")
