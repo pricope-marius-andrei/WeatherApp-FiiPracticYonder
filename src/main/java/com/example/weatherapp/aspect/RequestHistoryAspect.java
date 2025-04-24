@@ -3,7 +3,7 @@ package com.example.weatherapp.aspect;
 import com.example.weatherapp.dto.UserDto;
 import com.example.weatherapp.dto.WeatherDto;
 import com.example.weatherapp.mapper.UserMapper;
-import com.example.weatherapp.model.RequestHistory;
+import com.example.weatherapp.model.RequestHistoryModel;
 import com.example.weatherapp.model.UserModel;
 import com.example.weatherapp.service.interfaces.EmailService;
 import com.example.weatherapp.service.interfaces.RequestHistoryService;
@@ -117,15 +117,15 @@ public class RequestHistoryAspect {
         }
 
         userModel.setVersion(0L);
-        RequestHistory requestHistory = new RequestHistory();
-        requestHistory.setUser(userModel);
-        requestHistory.setLat(lat);
-        requestHistory.setLon(lon);
-        requestHistory.setLocation(location);
-        requestHistory.setResponse(weatherDto.toString());
+        RequestHistoryModel requestHistoryModel = new RequestHistoryModel();
+        requestHistoryModel.setUser(userModel);
+        requestHistoryModel.setLat(lat);
+        requestHistoryModel.setLon(lon);
+        requestHistoryModel.setLocation(location);
+        requestHistoryModel.setResponse(weatherDto.toString());
 
-        userModel.addRequest(requestHistory);
-        requestHistoryService.addRequestHistory(requestHistory);
+        userModel.addRequest(requestHistoryModel);
+        requestHistoryService.addRequestHistory(requestHistoryModel);
 
         return result;
     }

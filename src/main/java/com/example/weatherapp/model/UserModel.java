@@ -23,12 +23,12 @@ public class UserModel {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_profile_id", referencedColumnName = "id")
-    private UserProfile userProfile;
+    private UserProfileModel userProfileModel;
 
     //I used EAGER fetch type to avoid lazy loading issues
     //especially when using conversion between UserModel and UserDto
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    private Set<RequestHistory> requestHistories;
+    private Set<RequestHistoryModel> requestHistories;
 
     @Version
     private Long version;
@@ -66,25 +66,25 @@ public class UserModel {
         return null;
     }
 
-    public UserProfile getUserProfile() {
-        return userProfile;
+    public UserProfileModel getUserProfile() {
+        return userProfileModel;
     }
 
-    public void setUserProfile(UserProfile userProfile) {
-        this.userProfile = userProfile;
+    public void setUserProfile(UserProfileModel userProfileModel) {
+        this.userProfileModel = userProfileModel;
     }
 
-    public Set<RequestHistory> getRequestHistories() {
+    public Set<RequestHistoryModel> getRequestHistories() {
         return requestHistories;
     }
 
-    public void setRequestHistories(Set<RequestHistory> requestHistories) {
+    public void setRequestHistories(Set<RequestHistoryModel> requestHistories) {
         this.requestHistories = requestHistories;
     }
 
-    public void addRequest(RequestHistory requestHistory) {
-        this.requestHistories.add(requestHistory);
-        requestHistory.setUser(this);
+    public void addRequest(RequestHistoryModel requestHistoryModel) {
+        this.requestHistories.add(requestHistoryModel);
+        requestHistoryModel.setUser(this);
     }
 
     public Long getVersion() {

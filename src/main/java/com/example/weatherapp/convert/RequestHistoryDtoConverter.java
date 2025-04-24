@@ -1,6 +1,6 @@
 package com.example.weatherapp.convert;
 
-import com.example.weatherapp.model.RequestHistory;
+import com.example.weatherapp.model.RequestHistoryModel;
 import com.example.weatherapp.dto.RequestHistoryDto;
 import com.example.weatherapp.mapper.RequestHistoryMapper;
 import org.modelmapper.ModelMapper;
@@ -16,13 +16,13 @@ public class RequestHistoryDtoConverter implements RequestHistoryMapper {
     }
 
     @Override
-    public RequestHistoryDto toDto(RequestHistory requestHistory) {
+    public RequestHistoryDto toDto(RequestHistoryModel requestHistoryModel) {
 
-        return modelMapper.map(requestHistory, RequestHistoryDto.class);
+        return modelMapper.map(requestHistoryModel, RequestHistoryDto.class);
     }
 
     @Override
-    public RequestHistory toEntity(RequestHistoryDto requestHistoryDto) {
-        return modelMapper.map(requestHistoryDto, RequestHistory.class);
+    public RequestHistoryModel toEntity(RequestHistoryDto requestHistoryDto) {
+        return modelMapper.map(requestHistoryDto, RequestHistoryModel.class);
     }
 }

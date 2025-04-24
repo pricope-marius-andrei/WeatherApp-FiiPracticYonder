@@ -1,9 +1,9 @@
 package com.example.weatherapp.mapper;
 
-import com.example.weatherapp.model.RequestHistory;
+import com.example.weatherapp.model.RequestHistoryModel;
 import com.example.weatherapp.dto.RequestHistoryDto;
 
 public interface RequestHistoryMapper {
-    RequestHistoryDto toDto(RequestHistory requestHistory);
-    RequestHistory toEntity(RequestHistoryDto requestHistoryDto);
+    RequestHistoryDto toDto(RequestHistoryModel requestHistoryModel);
+    RequestHistoryModel toEntity(RequestHistoryDto requestHistoryDto);
 }

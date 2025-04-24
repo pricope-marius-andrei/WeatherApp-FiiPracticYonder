@@ -1,7 +1,7 @@
 package com.example.weatherapp.controller;
 
 import com.example.weatherapp.dto.UserDto;
-import com.example.weatherapp.model.UserProfile;
+import com.example.weatherapp.model.UserProfileModel;
 import com.example.weatherapp.dto.UserProfileDto;
 import com.example.weatherapp.service.interfaces.UserProfileService;
 import com.example.weatherapp.service.interfaces.UserService;
@@ -46,9 +46,9 @@ public class UserProfileController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> saveUserProfile(@RequestBody UserProfile userProfile) {
+    public ResponseEntity<Object> saveUserProfile(@RequestBody UserProfileModel userProfileModel) {
 
-        UserProfileDto userProfileDto = userProfileService.saveUserProfile(userProfile);
+        UserProfileDto userProfileDto = userProfileService.saveUserProfile(userProfileModel);
 
         if (userProfileDto == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -63,8 +63,8 @@ public class UserProfileController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUserProfile(@PathVariable Long id, @RequestBody UserProfile userProfile) {
-        userProfileService.updateUserProfile(id, userProfile);
+    public ResponseEntity<Object> updateUserProfile(@PathVariable Long id, @RequestBody UserProfileModel userProfileModel) {
+        userProfileService.updateUserProfile(id, userProfileModel);
 
         Map<String, Object> response = Map.of(
                 "id", id,

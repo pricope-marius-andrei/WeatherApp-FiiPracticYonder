@@ -2,7 +2,7 @@ package com.example.weatherapp.service;
 
 import com.example.weatherapp.convert.UserProfileDtoConverter;
 import com.example.weatherapp.model.UserModel;
-import com.example.weatherapp.model.UserProfile;
+import com.example.weatherapp.model.UserProfileModel;
 import com.example.weatherapp.dto.UserProfileDto;
 import com.example.weatherapp.mapper.UserProfileMapper;
 import com.example.weatherapp.repository.UserProfileRepository;
@@ -29,7 +29,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     public Page<UserProfileDto> getUserProfiles(Pageable pageable) {
 
-        Page<UserProfile> userProfiles = userProfileRepository.findAll(pageable);
+        Page<UserProfileModel> userProfiles = userProfileRepository.findAll(pageable);
 
         return userProfiles.map(userProfileMapper::toDto);
     }
@@ -39,20 +39,20 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
     @Transactional
-    public UserProfileDto saveUserProfile(UserProfile userProfile) {
-        return userProfileMapper.toDto(userProfileRepository.save(userProfile));
+    public UserProfileDto saveUserProfile(UserProfileModel userProfileModel) {
+        return userProfileMapper.toDto(userProfileRepository.save(userProfileModel));
     }
 
-    public void updateUserProfile(Long id, UserProfile userProfile) {
-        UserProfile exisingUserProfile = userProfileRepository.findById(id).orElse(null);
+    public void updateUserProfile(Long id, UserProfileModel userProfileModel) {
+        UserProfileModel exisingUserProfileModel = userProfileRepository.findById(id).orElse(null);
 
-        if (exisingUserProfile == null) {
+        if (exisingUserProfileModel == null) {
             return;
         }
 
-        CustomBeanUtils.copyNonNullProperties(userProfile, exisingUserProfile);
+        CustomBeanUtils.copyNonNullProperties(userProfileModel, exisingUserProfileModel);
 
-        userProfileRepository.save(exisingUserProfile);
+        userProfileRepository.save(exisingUserProfileModel);
     }
 
     public void deleteUserProfile(Long id) {

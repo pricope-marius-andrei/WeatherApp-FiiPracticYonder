@@ -2,7 +2,7 @@ package com.example.weatherapp.model;
 
 import java.util.List;
 
-public class LocationRequest {
+public class LocationRequestModel {
     private List<String> locations;
 
     public List<String> getLocations() {

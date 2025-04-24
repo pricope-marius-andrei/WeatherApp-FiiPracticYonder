@@ -1,6 +1,6 @@
 package com.example.weatherapp.service;
 
-import com.example.weatherapp.model.RequestHistory;
+import com.example.weatherapp.model.RequestHistoryModel;
 import com.example.weatherapp.dto.RequestHistoryDto;
 import com.example.weatherapp.mapper.RequestHistoryMapper;
 import com.example.weatherapp.repository.RequestHistoryRepository;
@@ -21,20 +21,20 @@ public class RequestHistoryServiceImpl implements RequestHistoryService {
     }
 
     @Override
-    public void addRequestHistory(RequestHistory requestHistory) {
-        requestHistoryRepository.save(requestHistory);
+    public void addRequestHistory(RequestHistoryModel requestHistoryModel) {
+        requestHistoryRepository.save(requestHistoryModel);
     }
 
     @Override
     public Page<RequestHistoryDto> getPagedRequestHistoriesByUserId(Long userId, Pageable pageable) {
 
-        Page<RequestHistory> requestHistories = requestHistoryRepository.findAllByUserId(userId, pageable);
+        Page<RequestHistoryModel> requestHistories = requestHistoryRepository.findAllByUserId(userId, pageable);
 
         return requestHistories.map(requestHistoryMapper::toDto);
     }
 
     @Override
-    public RequestHistory getRequestHistoryById(Long id) {
+    public RequestHistoryModel getRequestHistoryById(Long id) {
         return null;
     }
 

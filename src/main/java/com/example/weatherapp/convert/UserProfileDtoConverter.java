@@ -1,6 +1,6 @@
 package com.example.weatherapp.convert;
 
-import com.example.weatherapp.model.UserProfile;
+import com.example.weatherapp.model.UserProfileModel;
 import com.example.weatherapp.dto.UserProfileDto;
 import com.example.weatherapp.mapper.UserProfileMapper;
 import org.modelmapper.ModelMapper;
@@ -16,12 +16,12 @@ public class UserProfileDtoConverter implements UserProfileMapper {
     }
 
     @Override
-    public UserProfileDto toDto(UserProfile userProfile) {
-        return modelMapper.map(userProfile, UserProfileDto.class);
+    public UserProfileDto toDto(UserProfileModel userProfileModel) {
+        return modelMapper.map(userProfileModel, UserProfileDto.class);
     }
 
     @Override
-    public UserProfile toEntity(UserProfileDto userProfileDto) {
-        return modelMapper.map(userProfileDto, UserProfile.class);
+    public UserProfileModel toEntity(UserProfileDto userProfileDto) {
+        return modelMapper.map(userProfileDto, UserProfileModel.class);
     }
 }

@@ -7,7 +7,7 @@ import com.example.weatherapp.jwt.model.JwtRequestModel;
 import com.example.weatherapp.jwt.model.JwtResponseModel;
 import com.example.weatherapp.jwt.model.UserRegisterModel;
 import com.example.weatherapp.model.UserModel;
-import com.example.weatherapp.model.UserProfile;
+import com.example.weatherapp.model.UserProfileModel;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -82,7 +82,7 @@ public class JwtController {
 
             if(user.getUserProfile() == null)
             {
-                user.setUserProfile(new UserProfile());
+                user.setUserProfile(new UserProfileModel());
             }
 
             user.getUserProfile().setEmail(request.getEmail());

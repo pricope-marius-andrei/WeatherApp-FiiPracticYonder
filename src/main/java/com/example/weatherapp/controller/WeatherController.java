@@ -2,7 +2,7 @@ package com.example.weatherapp.controller;
 
 import com.example.weatherapp.dto.WeatherDto;
 import com.example.weatherapp.exception.EmailSenderException;
-import com.example.weatherapp.model.LocationRequest;
+import com.example.weatherapp.model.LocationRequestModel;
 import com.example.weatherapp.service.WeatherServiceImpl;
 import com.example.weatherapp.service.interfaces.WeatherService;
 import org.springframework.http.ResponseEntity;
@@ -33,9 +33,9 @@ public class WeatherController {
     }
 
     @GetMapping("/details/locations")
-    public ResponseEntity<Object> getDetailsByLocation(@RequestBody LocationRequest locationRequest) {
+    public ResponseEntity<Object> getDetailsByLocation(@RequestBody LocationRequestModel locationRequestModel) {
 
-        if (locationRequest == null || locationRequest.getLocations() == null || locationRequest.getLocations().isEmpty()) {
+        if (locationRequestModel == null || locationRequestModel.getLocations() == null || locationRequestModel.getLocations().isEmpty()) {
             return ResponseEntity.badRequest().body("Invalid request: No locations provided.");
         }
 
@@ -44,7 +44,7 @@ public class WeatherController {
 
         try(ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
 
-            for (String location : locationRequest.getLocations()) {
+            for (String location : locationRequestModel.getLocations()) {
                 Runnable task = new DelegatingSecurityContextRunnable(() -> {
                     try {
                         WeatherDto response = weatherService.getWeatherDetailsByLocation(location);

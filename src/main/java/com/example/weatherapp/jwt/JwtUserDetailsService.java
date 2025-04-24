@@ -4,7 +4,7 @@ import com.example.weatherapp.exception.PasswordIsNullException;
 import com.example.weatherapp.exception.UsernameAlreadyExistsException;
 import com.example.weatherapp.exception.UsernameIsNullException;
 import com.example.weatherapp.model.UserModel;
-import com.example.weatherapp.model.UserProfile;
+import com.example.weatherapp.model.UserProfileModel;
 import com.example.weatherapp.repository.UserModelRepository;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -57,8 +57,8 @@ public class JwtUserDetailsService implements UserDetailsService {
 
         if(userModel.getUserProfile() == null)
         {
-            UserProfile userProfile = new UserProfile();
-            userModel.setUserProfile(userProfile);
+            UserProfileModel userProfileModel = new UserProfileModel();
+            userModel.setUserProfile(userProfileModel);
         }
 
         userModel.setPassword(BCrypt.hashpw(userModel.getPassword(), BCrypt.gensalt()));

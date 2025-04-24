@@ -1,10 +1,10 @@
 package com.example.weatherapp.repository;
 
-import com.example.weatherapp.model.UserProfile;
+import com.example.weatherapp.model.UserProfileModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserProfileRepository extends JpaRepository<UserProfile, Long> {
+public interface UserProfileRepository extends JpaRepository<UserProfileModel, Long> {
 
 }

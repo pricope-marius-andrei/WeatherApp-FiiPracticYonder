@@ -3,7 +3,7 @@ package com.example.weatherapp.model;
 import jakarta.persistence.*;
 
 @Entity
-public class UserProfile {
+public class UserProfileModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
