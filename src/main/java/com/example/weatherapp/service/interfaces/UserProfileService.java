@@ -9,6 +9,6 @@ public interface UserProfileService {
     Page<UserProfileDto> getUserProfiles(Pageable pageable);
     UserProfileDto getUserProfileById(Long id);
     UserProfileDto saveUserProfile(UserProfileModel userProfileModel);
-    void updateUserProfile(Long id, UserProfileModel userProfileModel);
+    void updateUserProfile(Long id, UserProfileDto userProfileModel);
     void deleteUserProfile(Long id);
 }

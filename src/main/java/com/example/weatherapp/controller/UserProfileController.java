@@ -63,8 +63,8 @@ public class UserProfileController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Object> updateUserProfile(@PathVariable Long id, @RequestBody UserProfileModel userProfileModel) {
-        userProfileService.updateUserProfile(id, userProfileModel);
+    public ResponseEntity<Object> updateUserProfile(@PathVariable Long id, @RequestBody UserProfileDto userProfileDto) {
+        userProfileService.updateUserProfile(id, userProfileDto);
 
         Map<String, Object> response = Map.of(
                 "id", id,

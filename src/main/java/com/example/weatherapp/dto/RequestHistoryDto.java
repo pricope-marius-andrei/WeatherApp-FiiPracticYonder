@@ -1,5 +1,7 @@
 package com.example.weatherapp.dto;
 
+import java.time.LocalDate;
+
 public class RequestHistoryDto {
 
     private Long id;

@@ -43,14 +43,14 @@ public class UserProfileServiceImpl implements UserProfileService {
         return userProfileMapper.toDto(userProfileRepository.save(userProfileModel));
     }
 
-    public void updateUserProfile(Long id, UserProfileModel userProfileModel) {
+    public void updateUserProfile(Long id, UserProfileDto userProfile) {
         UserProfileModel exisingUserProfileModel = userProfileRepository.findById(id).orElse(null);
 
         if (exisingUserProfileModel == null) {
             return;
         }
 
-        CustomBeanUtils.copyNonNullProperties(userProfileModel, exisingUserProfileModel);
+        CustomBeanUtils.copyNonNullProperties(userProfile, exisingUserProfileModel);
 
         userProfileRepository.save(exisingUserProfileModel);
     }
