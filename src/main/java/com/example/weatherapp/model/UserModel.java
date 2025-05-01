@@ -1,6 +1,8 @@
 package com.example.weatherapp.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 
 import java.util.Set;
 
@@ -13,12 +15,19 @@ public class UserModel {
     private Long id;
 
     @Column(name = "user_name")
+    @NotBlank(message = "Name is mandatory")
     private String name;
 
     @Column(name = "user_username")
+    @NotBlank(message = "Username is mandatory")
     private String username;
 
     @Column
+    @NotBlank(message = "Password is mandatory")
+    @Pattern(
+            regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d).{8,}$",
+            message = "Password must be at least 8 characters, include uppercase, lowercase, and a number"
+    )
     private String password;
 
     @OneToOne(cascade = CascadeType.ALL)

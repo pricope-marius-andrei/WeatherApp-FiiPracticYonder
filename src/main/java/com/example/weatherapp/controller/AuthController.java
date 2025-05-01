@@ -1,29 +1,30 @@
-package com.example.weatherapp.jwt;
+package com.example.weatherapp.controller;
 
 import com.example.weatherapp.exception.PasswordIsNullException;
 import com.example.weatherapp.exception.UsernameAlreadyExistsException;
 import com.example.weatherapp.exception.UsernameIsNullException;
+import com.example.weatherapp.jwt.JwtUtil;
 import com.example.weatherapp.jwt.model.JwtRequestModel;
 import com.example.weatherapp.jwt.model.JwtResponseModel;
 import com.example.weatherapp.jwt.model.UserRegisterModel;
 import com.example.weatherapp.model.UserModel;
 import com.example.weatherapp.model.UserProfileModel;
+import com.example.weatherapp.service.JwtUserDetailsService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
 @RestController
 @CrossOrigin
-public class JwtController {
+@RequestMapping("/auth")
+public class AuthController {
 
     private final JwtUserDetailsService userDetailsService;
 
@@ -31,11 +32,11 @@ public class JwtController {
 
     private final JwtUtil tokenManager;
 
-    private final Logger logger = Logger.getLogger(JwtController.class.getName());
+    private final Logger logger = Logger.getLogger(AuthController.class.getName());
 
 
 
-    public JwtController(JwtUserDetailsService userDetailsService, JwtUtil tokenManager, AuthenticationManager authenticationManager) {
+    public AuthController(JwtUserDetailsService userDetailsService, JwtUtil tokenManager, AuthenticationManager authenticationManager) {
         this.userDetailsService = userDetailsService;
         this.tokenManager = tokenManager;
         this.authenticationManager = authenticationManager;
@@ -73,7 +74,7 @@ public class JwtController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody UserRegisterModel request) {
+    public ResponseEntity<String> register(@RequestBody @Valid UserRegisterModel request) {
         try {
 
             UserModel user = new UserModel();

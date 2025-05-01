@@ -1,6 +1,7 @@
 package com.example.weatherapp.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 
 @Entity
 public class UserProfileModel {
@@ -10,6 +11,7 @@ public class UserProfileModel {
     private Long id;
 
     @Column
+    @Email(message = "Email should be valid")
     private String email;
 
     @Column

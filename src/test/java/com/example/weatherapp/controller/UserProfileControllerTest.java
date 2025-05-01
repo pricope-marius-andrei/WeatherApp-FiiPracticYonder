@@ -2,7 +2,7 @@ package com.example.weatherapp.controller;
 
 import com.example.weatherapp.dto.UserProfileDto;
 import com.example.weatherapp.jwt.JwtFilter;
-import com.example.weatherapp.jwt.JwtUserDetailsService;
+import com.example.weatherapp.service.JwtUserDetailsService;
 import com.example.weatherapp.service.interfaces.UserProfileService;
 import com.example.weatherapp.service.interfaces.UserService;
 import com.example.weatherapp.utils.TestDataUtil;
@@ -11,12 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -34,16 +34,16 @@ public class UserProfileControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @MockBean
     private UserProfileService userProfileService;
 
-    @MockitoBean
+    @MockBean
     private UserService userService;
 
-    @MockitoBean
+    @MockBean
     private JwtUserDetailsService jwtUserDetailsService;
 
-    @MockitoBean
+    @MockBean
     private JwtFilter jwtFilter;
 
     @Test

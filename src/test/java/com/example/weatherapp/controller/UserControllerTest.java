@@ -2,7 +2,7 @@ package com.example.weatherapp.controller;
 
 import com.example.weatherapp.dto.UserDto;
 import com.example.weatherapp.jwt.JwtFilter;
-import com.example.weatherapp.jwt.JwtUserDetailsService;
+import com.example.weatherapp.service.JwtUserDetailsService;
 import com.example.weatherapp.service.interfaces.UserService;
 import com.example.weatherapp.utils.TestDataUtil;
 import org.apache.catalina.security.SecurityConfig;
@@ -10,9 +10,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.*;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -32,13 +32,13 @@ public class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockitoBean
+    @MockBean
     private UserService userService;
 
-    @MockitoBean
+    @MockBean
     private JwtUserDetailsService jwtUserDetailsService;
 
-    @MockitoBean
+    @MockBean
     private JwtFilter jwtFilter;
 
     @Test

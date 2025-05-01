@@ -1,4 +1,4 @@
-package com.example.weatherapp.jwt;
+package com.example.weatherapp.service;
 
 import com.example.weatherapp.exception.PasswordIsNullException;
 import com.example.weatherapp.exception.UsernameAlreadyExistsException;

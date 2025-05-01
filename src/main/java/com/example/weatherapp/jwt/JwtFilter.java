@@ -1,5 +1,6 @@
 package com.example.weatherapp.jwt;
 
+import com.example.weatherapp.service.JwtUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -40,7 +41,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        return path.equals("/login") || path.equals("/register") || path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs");
+        return path.equals("/auth/login") || path.equals("/auth/register") || path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs");
     }
 
     @Override
